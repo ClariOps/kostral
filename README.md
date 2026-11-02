@@ -5,12 +5,6 @@
 
 KOSTRAL helps developers and small teams catch configuration problems, identify resource waste, and spot security risks in Kubernetes manifests before deployment.
 
-## 🎬 Demo
-
-See KOSTRAL in action — analyzing a misconfigured Kubernetes manifest in seconds:
-
-![KOSTRAL Demo](./docs/assets/trl-demo.gif)
-
 **Built by ClariOps** — bringing clarity to Kubernetes operations.
 
 ---

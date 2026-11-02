@@ -2,7 +2,7 @@ name: kostral Scan
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "stagingV2" ]
   pull_request:
 
 jobs:
@@ -19,9 +19,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install kostral
-        run: | 
-          pip install -r requirements.txt
-          pip install -e .  
+        run: pip install -e .  
 
       - name: Run kostral
         run: |

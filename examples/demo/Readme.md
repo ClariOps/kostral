@@ -1,6 +1,6 @@
-# 🚀 kostral (Truck Overload) — Example Scenarios
+# 🚀 KOSTRAL — Example Scenarios
 
-This directory contains curated Kubernetes manifests designed to demonstrate the capabilities of **kostral**.
+This directory contains curated Kubernetes manifests designed to demonstrate the capabilities of **KOSTRAL**.
 
 These examples are intentionally crafted to simulate real-world DevOps scenarios across **validation, security, and optimization**.
 
@@ -10,7 +10,7 @@ These examples are intentionally crafted to simulate real-world DevOps scenarios
 
 ### 🔴 `bad.yaml` — Misconfigured Deployment (Full Issues)
 
-A deliberately flawed setup that triggers multiple kostral rules.
+A deliberately flawed setup that triggers multiple KOSTRAL rules.
 
 **Covers:**
 
@@ -19,7 +19,7 @@ A deliberately flawed setup that triggers multiple kostral rules.
 * Poor resource configuration
 * Unsafe service exposure (NodePort)
 
-👉 Use this to see kostral’s **full detection capability**
+👉 Use this to see KOSTRAL's **full detection capability**
 
 ```bash
 koss explain examples/demo/bad.yaml
@@ -39,7 +39,7 @@ A clean and well-configured deployment following Kubernetes best practices.
 * Balanced resource allocation
 * Safe service exposure (ClusterIP)
 
-👉 Use this to verify that kostral:
+👉 Use this to verify that KOSTRAL:
 
 * does **not produce noise**
 * respects good configurations
@@ -88,7 +88,7 @@ koss optimize examples/demo/perf.yaml
 
 ## 🧠 What These Examples Demonstrate
 
-These scenarios highlight kostral’s core capabilities:
+These scenarios highlight KOSTRAL’s core capabilities:
 
 | Capability          | Demonstrated In         |
 | ------------------- | ----------------------- |
@@ -101,7 +101,7 @@ These scenarios highlight kostral’s core capabilities:
 
 ## 🔍 Explain vs Optimize
 
-kostral provides two main analysis modes:
+KOSTRAL provides two main analysis modes:
 
 ### 🔎 Explain Mode
 
@@ -156,7 +156,7 @@ This demonstrates:
 
 ## 🧩 Philosophy
 
-kostral focuses on:
+KOSTRAL focuses on:
 
 * **Clarity over automation**
 * **Suggestions over implicit changes**
