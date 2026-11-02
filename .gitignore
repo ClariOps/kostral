@@ -4,5 +4,5 @@ venv/
 **/__pycache__/
 
 clariops_trload.egg-info
-
+kostral_alias
 dist

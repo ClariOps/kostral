@@ -1,6 +1,6 @@
-# 🚀 trload (Truck Overload) — Example Scenarios
+# 🚀 kostral (Truck Overload) — Example Scenarios
 
-This directory contains curated Kubernetes manifests designed to demonstrate the capabilities of **trload**.
+This directory contains curated Kubernetes manifests designed to demonstrate the capabilities of **kostral**.
 
 These examples are intentionally crafted to simulate real-world DevOps scenarios across **validation, security, and optimization**.
 
@@ -10,7 +10,7 @@ These examples are intentionally crafted to simulate real-world DevOps scenarios
 
 ### 🔴 `bad.yaml` — Misconfigured Deployment (Full Issues)
 
-A deliberately flawed setup that triggers multiple trload rules.
+A deliberately flawed setup that triggers multiple kostral rules.
 
 **Covers:**
 
@@ -19,11 +19,11 @@ A deliberately flawed setup that triggers multiple trload rules.
 * Poor resource configuration
 * Unsafe service exposure (NodePort)
 
-👉 Use this to see trload’s **full detection capability**
+👉 Use this to see kostral’s **full detection capability**
 
 ```bash
-trload explain examples/demo/bad.yaml
-trload optimize examples/demo/bad.yaml
+koss explain examples/demo/bad.yaml
+koss optimize examples/demo/bad.yaml
 ```
 
 ---
@@ -39,13 +39,13 @@ A clean and well-configured deployment following Kubernetes best practices.
 * Balanced resource allocation
 * Safe service exposure (ClusterIP)
 
-👉 Use this to verify that trload:
+👉 Use this to verify that kostral:
 
 * does **not produce noise**
 * respects good configurations
 
 ```bash
-trload explain examples/demo/good.yaml
+koss explain examples/demo/good.yaml
 ```
 
 ---
@@ -63,7 +63,7 @@ A minimal setup designed to highlight **security misconfigurations**.
 👉 Use this to isolate and test **Security Engine behavior**
 
 ```bash
-trload explain examples/demo/security.yaml
+koss explain examples/demo/security.yaml
 ```
 
 ---
@@ -81,14 +81,14 @@ Focuses on inefficient CPU and memory configurations.
 👉 Use this to evaluate **Optimization Engine recommendations**
 
 ```bash
-trload optimize examples/demo/perf.yaml
+koss optimize examples/demo/perf.yaml
 ```
 
 ---
 
 ## 🧠 What These Examples Demonstrate
 
-These scenarios highlight trload’s core capabilities:
+These scenarios highlight kostral’s core capabilities:
 
 | Capability          | Demonstrated In         |
 | ------------------- | ----------------------- |
@@ -101,12 +101,12 @@ These scenarios highlight trload’s core capabilities:
 
 ## 🔍 Explain vs Optimize
 
-trload provides two main analysis modes:
+kostral provides two main analysis modes:
 
 ### 🔎 Explain Mode
 
 ```bash
-trload explain <file>
+koss explain <file>
 ```
 
 * Read-only analysis
@@ -118,7 +118,7 @@ trload explain <file>
 ### ⚙️ Optimize Mode
 
 ```bash
-trload optimize <file>
+koss optimize <file>
 ```
 
 * Includes all explain features
@@ -141,9 +141,9 @@ These examples simulate real-world DevOps challenges:
 ## 🚀 Recommended Demo Flow
 
 ```bash
-trload explain examples/demo/bad.yaml
-trload optimize examples/demo/bad.yaml
-trload explain examples/demo/good.yaml
+koss explain examples/demo/bad.yaml
+koss optimize examples/demo/bad.yaml
+koss explain examples/demo/good.yaml
 ```
 
 This demonstrates:
@@ -156,7 +156,7 @@ This demonstrates:
 
 ## 🧩 Philosophy
 
-trload focuses on:
+kostral focuses on:
 
 * **Clarity over automation**
 * **Suggestions over implicit changes**

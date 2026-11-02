@@ -1,4 +1,4 @@
-from trload.dsl import deployment, pvc
+from kostral.dsl import deployment, pvc
 
 
 

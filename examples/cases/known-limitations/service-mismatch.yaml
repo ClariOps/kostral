@@ -1,7 +1,7 @@
 
 
 
-# trload limitation: no cross-resource validation yet
+# kostral limitation: no cross-resource validation yet
 
 apiVersion: v1
 kind: Service

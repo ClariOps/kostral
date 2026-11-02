@@ -1,12 +1,12 @@
 import json
 from pathlib import Path
-from trload.adapters.remote import HTTPModuleClient
-from trload.modules.renderer.engine import RendererEngine
+from kostral.adapters.remote import HTTPModuleClient
+from kostral.modules.renderer.engine import RendererEngine
 
 try:
     WORKFLOW_DIR = Path(__file__).resolve().parent
 except NameError:
-    # Fallback if trload executes the file via exec() without setting __file__
+    # Fallback if kostral executes the file via exec() without setting __file__
     # We resolve it relative to the script path argument itself
     import sys
     WORKFLOW_DIR = Path(sys.argv[0]).resolve().parent

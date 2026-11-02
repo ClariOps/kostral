@@ -1,5 +1,5 @@
-from trload.modules.optimizer.engine import OptimizerEngine
-from trload.adapters.remote.server import serve
+from kostral.modules.optimizer.engine import OptimizerEngine
+from kostral.adapters.remote.server import serve
 
 
 if __name__ == "__main__":
