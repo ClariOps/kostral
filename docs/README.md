@@ -1,22 +1,22 @@
-# 📚 TRL Documentation
+# 📚 KOSTRAL Documentation
 
-Welcome to the TRL documentation.
+Welcome to the KOSTRAL documentation.
 
-TRL is a **pre-deployment decision system for Kubernetes**. It analyzes Kubernetes resources before they reach a target environment and helps users understand:
+KOSTRAL is a **pre-deployment decision system for Kubernetes**. It analyzes Kubernetes resources before they reach a target environment and helps users understand:
 
 - what is wrong
 - what can be improved
 - what is risky
-- what TRL changed
+- what KOSTRAL changed
 - what the resulting configuration looks like
 
-TRL is designed to keep these responsibilities separate while allowing its engines to evolve independently.
+KOSTRAL is designed to keep these responsibilities separate while allowing its engines to evolve independently.
 
 ---
 
 # 🧭 Start Here
 
-If you are new to TRL, read the documentation in this order:
+If you are new to KOSTRAL, read the documentation in this order:
 
 ```text
                          ┌───────────────┐
@@ -53,8 +53,8 @@ If you are new to TRL, read the documentation in this order:
 
 | You want to understand... | Read |
 |---|---|
-| What TRL is | [README.md](./README.md) |
-| How to think about TRL | [system-model.md](./system-model.md) |
+| What KOSTRAL is | [README.md](./README.md) |
+| How to think about KOSTRAL | [system-model.md](./system-model.md) |
 | How engines and IR fit together | [architecture.md](./architecture.md) |
 | What behavior must remain stable | [guarantees.md](./guarantees.md) |
 | How to contribute | [CONTRIBUTING.md](../CONTRIBUTING.md) |
@@ -65,7 +65,7 @@ If you are new to TRL, read the documentation in this order:
 
 ---
 
-# 🧠 The TRL Mental Model
+# 🧠 The KOSTRAL Mental Model
 
 At the highest level:
 
@@ -160,13 +160,13 @@ Instead:
 
 > **Engine independence defines ownership. Workflow defines order.**
 
-This distinction is central to TRL's architecture.
+This distinction is central to KOSTRAL's architecture.
 
 ---
 
 # 🌐 Remote Engine Composition
 
-TRL includes an experimental example of composing engines that run in
+KOSTRAL includes an experimental example of composing engines that run in
 separate processes.
 
 The current example uses HTTP clients to invoke remote Optimizer,
@@ -205,7 +205,7 @@ registration, engine uploads, or production-grade remote execution.
 
 # 🧩 Engine Responsibilities
 
-TRL classifies engines by **responsibility**, not simply by the Kubernetes field they inspect.
+KOSTRAL classifies engines by **responsibility**, not simply by the Kubernetes field they inspect.
 
 ```text
                          RULE / ENGINE
@@ -361,7 +361,7 @@ DETECT SECURITY / POLICY RISK
      Security
 ```
 
-This becomes especially important as TRL grows to hundreds or thousands of rules.
+This becomes especially important as KOSTRAL grows to hundreds or thousands of rules.
 
 ---
 
@@ -409,12 +409,12 @@ The important distinction is:
 
 # 📊 Reporting and Output
 
-TRL can present results in different formats without changing engine responsibilities.
+KOSTRAL can present results in different formats without changing engine responsibilities.
 
 Current reporting/output modes include:
 
 ```text
-                 TRL Results
+                 KOSTRAL Results
                       │
           ┌───────────┼───────────┐
           │           │           │
@@ -472,7 +472,7 @@ If a future engine introduces mutation, its responsibility and mutation behavior
 
 # 🧱 IR
 
-The Intermediate Representation (IR) provides the common structure used by TRL engines.
+The Intermediate Representation (IR) provides the common structure used by KOSTRAL engines.
 
 Conceptually:
 
@@ -510,7 +510,7 @@ For implementation details, see [architecture.md](./architecture.md).
 
 # 🧪 Predictable Behavior
 
-TRL is designed around:
+KOSTRAL is designed around:
 
 ```text
 Same input
@@ -537,7 +537,7 @@ See [guarantees.md](./guarantees.md) for the formal behavioral guarantees.
 
 # 🧩 Contribution Model
 
-TRL is designed to grow through independent contributions.
+KOSTRAL is designed to grow through independent contributions.
 
 The easiest contribution path today is:
 
@@ -579,7 +579,7 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 # 🔮 Future Capabilities
 
-TRL may eventually support additional capabilities such as:
+KOSTRAL may eventually support additional capabilities such as:
 
 ```text
                     Future
@@ -621,7 +621,7 @@ A future engine should define its own responsibility rather than being forced in
 # 🎯 In One Picture
 
 ```text
-                         TRL
+                         KOSTRAL
                           │
                           ▼
                     Kubernetes Input
@@ -657,7 +657,7 @@ A future engine should define its own responsibility rather than being forced in
 
 ## The Core Idea
 
-TRL separates four things:
+KOSTRAL separates four things:
 
 ```text
 RESPONSIBILITY
@@ -680,6 +680,6 @@ EXECUTION
 How is the prepared result delivered?
 ```
 
-Keeping these concepts separate allows TRL to grow without making the system harder to understand.
+Keeping these concepts separate allows KOSTRAL to grow without making the system harder to understand.
 
-> **TRL makes deployment decisions visible, predictable, and understandable before they reach the target environment.**
+> **KOSTRAL makes deployment decisions visible, predictable, and understandable before they reach the target environment.**

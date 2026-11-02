@@ -1,6 +1,6 @@
-# 🔍 TRL Rule Audit Checklist
+# 🔍 KOSTRAL Rule Audit Checklist
 
-This checklist ensures all rules follow TRL guarantees and quality standards.
+This checklist ensures all rules follow KOSTRAL guarantees and quality standards.
 
 ---
 

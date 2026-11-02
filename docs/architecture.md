@@ -1,6 +1,6 @@
-# 🏗 TRL Architecture
+# 🏗 KOSTRAL Architecture
 
-TRL is a pipeline-based pre-deployment intelligence system for Kubernetes.
+KOSTRAL is a pipeline-based pre-deployment intelligence system for Kubernetes.
 
 It analyzes, optimizes, validates, and secures Kubernetes resources before they are passed to the final output or optional execution stage.
 
@@ -47,7 +47,7 @@ It is not a separate engine or implementation component.
 
 # 🧱 2. Intermediate Representation
 
-TRL converts supported Kubernetes resources into a shared Intermediate Representation (IR).
+KOSTRAL converts supported Kubernetes resources into a shared Intermediate Representation (IR).
 
 The IR provides a common structure between input handling and rule processing.
 
@@ -64,7 +64,7 @@ Kubernetes Manifest
      Engines
 ```
 
-The IR helps TRL:
+The IR helps KOSTRAL:
 
 - normalize resources
 - separate parsing from rule logic
@@ -90,7 +90,7 @@ PersistentVolumeClaimIR
 
 # 🔌 3. Independent Engines
 
-TRL is composed of independent engines operating on the shared IR.
+KOSTRAL is composed of independent engines operating on the shared IR.
 
 The engines are intended to be:
 
@@ -105,7 +105,7 @@ The engines are intended to be:
 
 > An engine should be usable as a distinct module within a workflow without requiring another engine to understand its internal implementation.
 
-It does **not** imply that TRL currently provides a dynamic plugin-loading framework.
+It does **not** imply that KOSTRAL currently provides a dynamic plugin-loading framework.
 
 ---
 
@@ -327,7 +327,7 @@ The architectural term should remain **Cloud Engine**.
 
 # 🔒 11. Documented Engine Boundaries
 
-TRL currently follows these boundaries:
+KOSTRAL currently follows these boundaries:
 
 | Engine | Responsibility | Current IR behavior |
 |---|---|---|
@@ -457,12 +457,12 @@ This is workflow behavior, not implementation coupling.
 
 # 📊 15. Reporting and Output
 
-TRL separates engine processing from output representation.
+KOSTRAL separates engine processing from output representation.
 
 Conceptually:
 
 ```text
-                    TRL RESULT
+                    KOSTRAL RESULT
                         │
           ┌─────────────┼─────────────┐
           │             │             │
@@ -500,7 +500,7 @@ Documented boundary
 Runtime authority system
 ```
 
-TRL currently relies on implementation structure, rule design, tests, and contributor discipline to maintain these boundaries.
+KOSTRAL currently relies on implementation structure, rule design, tests, and contributor discipline to maintain these boundaries.
 
 ---
 
@@ -628,7 +628,7 @@ This remains a future architecture concept until implemented.
 
 # 🎯 21. Architecture in Four Rules
 
-The TRL architecture can be remembered through four simple ideas:
+The KOSTRAL architecture can be remembered through four simple ideas:
 
 ```text
 1. Engines are independent modules.
@@ -671,7 +671,7 @@ OUTPUT
 
 # 🌐 22. Remote Engine Composition
 
-TRL includes a remote adapter implementation that allows an engine
+KOSTRAL includes a remote adapter implementation that allows an engine
 running in a separate process to be invoked through HTTP.
 
 This introduces another way to compose existing engines into a workflow.
@@ -724,11 +724,11 @@ The remote composition implementation uses the following components:
 
 | Component | Location | Responsibility |
 |---|---|---|
-| HTTP client | `trl/adapters/remote/client.py` | Serializes context data and invokes a remote endpoint |
-| HTTP server | `trl/adapters/remote/server.py` | Receives requests, reconstructs context, and invokes an engine |
+| HTTP client | `kostral/adapters/remote/client.py` | Serializes context data and invokes a remote endpoint |
+| HTTP server | `kostral/adapters/remote/server.py` | Receives requests, reconstructs context, and invokes an engine |
 | Workflow definition | `examples/remote/workflow.py` | Defines the engine composition |
 | Registry example | `examples/remote/registry.json` | Maps example engine identifiers to HTTP endpoints |
-| CLI entry point | `trl/cli/main.py` | Loads and executes a workflow through `trl remote` |
+| CLI entry point | `kostral/cli/main.py` | Loads and executes a workflow through `koss remote` |
 
 ## 22.3 Remote Request and Response
 
@@ -819,7 +819,7 @@ The implementation demonstrates:
 - Transfer of options and report data.
 - Remote engine execution through the existing `process(ctx)` interface.
 - Sequential composition of remote and local engines.
-- Workflow execution through the `trl remote` CLI command.
+- Workflow execution through the `koss remote` CLI command.
 
 These capabilities demonstrate that engines can be invoked remotely without moving their internal processing logic into the workflow or communication layer.
 

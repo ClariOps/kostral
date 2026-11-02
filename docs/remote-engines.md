@@ -1,7 +1,7 @@
 
 # Remote Engine Composition
 
-TRL includes an experimental remote engine composition example.
+KOSTRAL includes an experimental remote engine composition example.
 
 It demonstrates how independent engines can run in separate processes and be invoked through HTTP as part of a user-defined workflow.
 
@@ -13,12 +13,12 @@ It is not a production-ready distributed execution platform.
 
 ## 1. What This Demonstrates
 
-In a traditional local workflow, engines execute within the same TRL process.
+In a traditional local workflow, engines execute within the same KOSTRAL process.
 
 The remote example demonstrates another arrangement:
 
 ```text
-                 TRL Workflow
+                 KOSTRAL Workflow
                       |
                       v
               HTTPModuleClient
@@ -70,7 +70,7 @@ examples/
 The implementation is located in:
 
 ```text
-trl/
+kostral/
 └── adapters/
     └── remote/
         ├── client.py
@@ -96,9 +96,10 @@ trl/
 Clone the repository and install its dependencies:
 
 ```bash
-git clone https://github.com/ClariOps/trl.git
-cd trl
+git clone https://github.com/ClariOps/kostral.git
+cd kostral
 pip install -r requirements.txt
+pip install -e .
 ```
 
 Run the following commands from the repository root.
@@ -277,7 +278,7 @@ Open another terminal from the repository root.
 Run:
 
 ```bash
-trl remote ./examples/demo/bad.yaml \
+koss remote ./examples/demo/bad.yaml \
   --exec ./examples/remote/workflow.py
 ```
 
@@ -293,7 +294,7 @@ The command:
 ### JSON report
 
 ```bash
-trl remote ./examples/demo/bad.yaml \
+koss remote ./examples/demo/bad.yaml \
   --exec ./examples/remote/workflow.py \
   --output=json
 ```
@@ -301,7 +302,7 @@ trl remote ./examples/demo/bad.yaml \
 ### YAML manifest output
 
 ```bash
-trl remote ./examples/demo/bad.yaml \
+koss remote ./examples/demo/bad.yaml \
   --exec ./examples/remote/workflow.py \
   --output=yaml
 ```
@@ -309,7 +310,7 @@ trl remote ./examples/demo/bad.yaml \
 ### Verbose reporting
 
 ```bash
-trl remote ./examples/demo/bad.yaml \
+koss remote ./examples/demo/bad.yaml \
   --exec ./examples/remote/workflow.py \
   --verbose
 ```
@@ -325,7 +326,7 @@ The remote communication mechanism is implemented by two components.
 Location:
 
 ```text
-trl/adapters/remote/client.py
+kostral/adapters/remote/client.py
 ```
 
 The client:
@@ -355,7 +356,7 @@ The IR entries contain the resource kind and its Kubernetes manifest.
 Location:
 
 ```text
-trl/adapters/remote/server.py
+kostral/adapters/remote/server.py
 ```
 
 The server:
@@ -414,7 +415,7 @@ The example demonstrates:
 - Report serialization and deserialization
 - Sequential composition of remote engines
 - Composition of remote and local engine instances
-- Workflow execution through `trl remote`
+- Workflow execution through `koss remote`
 
 The example does not currently demonstrate:
 
@@ -467,7 +468,7 @@ using a relative path.
 Check the IR mapping in:
 
 ```text
-trl/adapters/remote/client.py
+kostral/adapters/remote/client.py
 ```
 
 The resource must have matching serialization and deserialization support.
@@ -510,4 +511,4 @@ It does not change which responsibility the engine owns.
 
 The workflow determines the composition. The engine remains responsible for its own processing logic.
 
-This is the current foundation demonstrated by TRL's remote engine example.
+This is the current foundation demonstrated by KOSTRAL's remote engine example.

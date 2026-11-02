@@ -1,20 +1,20 @@
-# TRL CLI Reference
+# KOSTRAL CLI Reference
 
 > Pre-deployment analysis and optimization for Kubernetes manifests.
 
-TRL provides a small CLI surface for analyzing, optimizing, and running Kubernetes workflows.
+KOSTRAL provides a small CLI surface for analyzing, optimizing, and running Kubernetes workflows.
 
 ## Synopsis
 
 ```text
-trl <command> [arguments] [options]
+koss <command> [arguments] [options]
 ```
 
 Run:
 
 ```bash
 
-trl <command> --help
+koss <command> --help
 ```
 
 ---
@@ -26,21 +26,21 @@ trl <command> --help
 | `explain` | Analyze a manifest without optimization |
 | `optimize` | Optimize, validate, assess security, and produce the resulting state |
 | `remote` | Execute a user-defined workflow that can invoke remote engines |
-| `run` | Run a TRL workflow from a Python DSL input |
+| `run` | Run a KOSTRAL workflow from a Python DSL input |
 | `generate` | CLI-based Deployment input |
 
 > `run` and `generate` use the Manifest Preparation Engine. Both commands are currently on hold and may be reintroduced later. 
 
 ---
 
-# `trl explain`
+# `koss explain`
 
 Analyze a Kubernetes manifest without applying Optimizer mutations.
 
 ## Usage
 
 ```bash
-trl explain <file> [options]
+koss explain <file> [options]
 ```
 
 ## Arguments
@@ -60,28 +60,28 @@ file    Path to the input manifest
 
 ```bash
 # Human-readable report
-trl explain ./examples/demo/bad.yaml
+koss explain ./examples/demo/bad.yaml
 
 # JSON report
-trl explain ./examples/demo/bad.yaml --output=json
+koss explain ./examples/demo/bad.yaml --output=json
 
 # YAML manifest output
-trl explain ./examples/demo/bad.yaml --output=yaml
+koss explain ./examples/demo/bad.yaml --output=yaml
 
 # YAML output with a detailed report on stderr
-trl explain ./examples/demo/bad.yaml --output=yaml --verbose
+koss explain ./examples/demo/bad.yaml --output=yaml --verbose
 ```
 
 ---
 
-# `trl optimize`
+# `koss optimize`
 
 Run the optimization workflow and then validate and assess the resulting state.
 
 ## Usage
 
 ```bash
-trl optimize <file> [options]
+koss optimize <file> [options]
 ```
 
 ## Arguments
@@ -107,24 +107,24 @@ file    Path to the input manifest
 
 ```bash
 # Optimize and report
-trl optimize ./examples/demo/bad.yaml
+koss optimize ./examples/demo/bad.yaml
 
 # Optimize without applying the execution target
-trl optimize ./examples/demo/bad.yaml --dry-run
+koss optimize ./examples/demo/bad.yaml --dry-run
 
 # JSON report
-trl optimize ./examples/demo/bad.yaml --output=json
+koss optimize ./examples/demo/bad.yaml --output=json
 
 # YAML manifest output
-trl optimize ./examples/demo/bad.yaml --output=yaml
+koss optimize ./examples/demo/bad.yaml --output=yaml
 
 # YAML manifests plus detailed report
-trl optimize ./examples/demo/bad.yaml --output=yaml --verbose
+koss optimize ./examples/demo/bad.yaml --output=yaml --verbose
 ```
 
 ---
 
-# `trl remote`
+# `koss remote`
 
 Execute a workflow defined in a Python file.
 
@@ -134,7 +134,7 @@ through HTTP clients.
 ## Usage
 
 ```bash
-trl remote <file> --exec <workflow> [options]
+koss remote <file> --exec <workflow> [options]
 ```
 
 ## Arguments
@@ -174,20 +174,20 @@ python examples/remote/security_server.py
 Then execute the workflow from another terminal:
 
 ```bash
-trl remote ./examples/demo/bad.yaml \
+koss remote ./examples/demo/bad.yaml \
   --exec ./examples/remote/workflow.py
 ```
 
 JSON report:
 ```bash
-trl remote ./examples/demo/bad.yaml \
+koss remote ./examples/demo/bad.yaml \
   --exec ./examples/remote/workflow.py \
   --output=json
 ```
 
 YAML report:
 ```bash
-trl remote ./examples/demo/bad.yaml \
+koss remote ./examples/demo/bad.yaml \
   --exec ./examples/remote/workflow.py \
   --output=yaml
 ```
@@ -196,14 +196,14 @@ trl remote ./examples/demo/bad.yaml \
 
 ---
 
-# `trl run`
+# `koss run`
 
-Run a TRL workflow from a Python DSL input.
+Run a KOSTRAL workflow from a Python DSL input.
 
 ## Usage
 
 ```bash
-trl run <file> [options]
+koss run <file> [options]
 ```
 
 ## Arguments
@@ -233,10 +233,10 @@ examples/
     └── app.py
 ```
 
-The application defines Kubernetes resources with the TRL DSL:
+The application defines Kubernetes resources with the KOSTRAL DSL:
 
 ```python
-from trl.dsl import deployment, pvc
+from kostral.dsl import deployment, pvc
 
 
 api = deployment(
@@ -259,23 +259,23 @@ pvc(
 Run it with:
 
 ```bash
-trl run ./examples/dsl/app.py
+koss run ./examples/dsl/app.py
 ```
 
-`app.py` is the Python DSL input; TRL loads the user-defined IR and runs the selected workflow.
+`app.py` is the Python DSL input; KOSTRAL loads the user-defined IR and runs the selected workflow.
 
-> `trl run` is currently on hold and may be reinitiated later.
+> `koss run` is currently on hold and may be reinitiated later.
 
 ---
 
-# `trl generate`
+# `koss generate`
 
 Create a deployment from CLI-provided deployment parameters.
 
 ## Usage
 
 ```bash
-trl generate [options]
+koss generate [options]
 ```
 
 ## Options
@@ -296,10 +296,10 @@ trl generate [options]
 ## Example
 
 ```bash
-trl generate   --name backend   --cpu 500m   --memory 512Mi   --image nginx:1.27  
+koss generate   --name backend   --cpu 500m   --memory 512Mi   --image nginx:1.27  
 ```
 
-> `trl generate` is currently on hold and may be reinitiated later.
+> `koss generate` is currently on hold and may be reinitiated later.
 
 
 ---
@@ -313,14 +313,14 @@ trl generate   --name backend   --cpu 500m   --memory 512Mi   --image nginx:1.27
 --output=yaml
 ```
 
-Without `--output`, TRL uses its human-readable CLI reporting path.
+Without `--output`, KOSTRAL uses its human-readable CLI reporting path.
 
 ### JSON
 
 Use JSON when another tool, script, or CI system needs the report.
 
 ```bash
-trl optimize ./app.yaml --output=json
+koss optimize ./app.yaml --output=json
 ```
 
 ### YAML
@@ -328,13 +328,13 @@ trl optimize ./app.yaml --output=json
 Use YAML when the resulting Kubernetes manifests are the required output.
 
 ```bash
-trl optimize ./app.yaml --output=yaml
+koss optimize ./app.yaml --output=yaml
 ```
 
 ### Verbose
 
 ```bash
-trl optimize ./app.yaml --verbose
+koss optimize ./app.yaml --verbose
 ```
 
 For YAML output, `--verbose` keeps the manifest on standard output and emits the detailed report separately on standard error.
@@ -345,12 +345,12 @@ This preserves YAML as machine-consumable output.
 
 # Standard Input and Piping
 
-TRL accepts a manifest path as command input.
+KOSTRAL accepts a manifest path as command input.
 
 For rendered Kubernetes YAML, a Unix-style pipeline can be used where the current input loader supports standard input:
 
 ```bash
-helm template ./chart | trl optimize -
+helm template ./chart | koss optimize -
 ```
 
 Check the installed CLI help before relying on `-` in automation.
@@ -362,37 +362,37 @@ Check the installed CLI help before relying on `-` in automation.
 ## Inspect
 
 ```bash
-trl explain ./app.yaml
+koss explain ./app.yaml
 ```
 
 ## Optimize
 
 ```bash
-trl optimize ./app.yaml
+koss optimize ./app.yaml
 ```
 
 ## Optimize without execution
 
 ```bash
-trl optimize ./app.yaml --dry-run
+koss optimize ./app.yaml --dry-run
 ```
 
 ## Machine-readable report
 
 ```bash
-trl optimize ./app.yaml --output=json > report.json
+koss optimize ./app.yaml --output=json > report.json
 ```
 
 ## Machine-readable manifests
 
 ```bash
-trl optimize ./app.yaml --output=yaml > optimized.yaml
+koss optimize ./app.yaml --output=yaml > optimized.yaml
 ```
 
 ## Manifest + verbose diagnostics
 
 ```bash
-trl optimize ./app.yaml --output=yaml --verbose > optimized.yaml
+koss optimize ./app.yaml --output=yaml --verbose > optimized.yaml
 ```
 
 The manifest remains in `optimized.yaml`; the verbose report is emitted separately through stderr.
@@ -404,11 +404,11 @@ The manifest remains in `optimized.yaml`; the verbose report is emitted separate
 The CLI itself is the authoritative source for available flags:
 
 ```bash
-trl explain --help
-trl optimize --help
-trl remote --help
-trl run --help
-trl generate --help
+koss explain --help
+koss optimize --help
+koss remote --help
+koss run --help
+koss generate --help
 ```
 
 When this reference and the installed CLI differ, use the CLI help for the version you are running.

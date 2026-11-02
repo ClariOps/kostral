@@ -1,76 +1,74 @@
-# 📊 TRL Output Example
+# 📊 KOSTRAL Output Example
 
-This example demonstrates how TRL analyzes Kubernetes manifests and provides actionable feedback before deployment.
+This example demonstrates how KOSTRAL analyzes Kubernetes manifests and provides actionable feedback before deployment.
 
 ---
 
 ## 🚀 Command
 
 ```bash
-python -m trl optimize ./trl/examples/cases/mixed/full-risk-app.yaml --dry-run --verbose
+koss optimize ./examples/cases/mixed/full-risk-app.yaml --dry-run --verbose
 ```
 
 ---
 
 ## 🔍 Execution Logs (Verbose Mode)
-
 ```text
-████████╗██████╗ ██╗     
-╚══██╔══╝██╔══██╗██║     
-   ██║   ██████╔╝██║     
-   ██║   ██╔══██╗██║     
-   ██║   ██║  ██║███████╗
-   ╚═╝   ╚═╝  ╚═╝╚══════╝
+╗  ██╗ ██████╗ ███████╗████████╗██████╗  █████╗ ██╗     
+██║ ██╔╝██╔═══██╗██╔════╝╚══██╔══╝██╔══██╗██╔══██╗██║     
+█████╔╝ ██║   ██║███████╗   ██║   ██████╔╝███████║██║     
+██╔═██╗ ██║   ██║╚════██║   ██║   ██╔══██╗██╔══██║██║     
+██║  ██╗╚██████╔╝███████║   ██║   ██║  ██║██║  ██║███████╗
+╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝
 
-🚚 TRL — Pre-Deployment Intelligence System
+Kostral — Pre-Deployment Intelligence System
 ────────────────────────────────────────────
 Analyze • Optimize • Validate • Secure
 
 "Making Kubernetes predictable before it runs"
-
-
+```
 🔍 Analyzing: full-risk-app.yaml 
 
-03:05:51 | INFO     | trl.cli.main | args, Namespace(cmd='optimize', file='./trl/examples/cases/mixed/full-risk-app.yaml', target=None, context=None, verbose=True, dry_run=True, skip_rules=False, allow_rules=False, apply_aks_defaults=False, output=None)
-03:05:51 | INFO     | trl.modules.optimizer.engine | Initializing optimizer ........
-03:05:51 | INFO     | trl.modules.optimizer.engine | 2 resources loaded
-03:05:51 | DEBUG    | trl.core.base | cpu-default: executing (resource=full-risk-app)
-03:05:51 | DEBUG    | trl.core.base | cpu-default: completed
-03:05:51 | DEBUG    | trl.core.base | memory-default: executing (resource=full-risk-app)
-03:05:51 | DEBUG    | trl.core.base | memory-default: completed
-03:05:51 | DEBUG    | trl.core.base | cpu-limit-default: executing (resource=full-risk-app)
-03:05:51 | DEBUG    | trl.core.base | cpu-limit-default: completed
-03:05:51 | DEBUG    | trl.core.base | memory-limit-default: executing (resource=full-risk-app)
-03:05:51 | DEBUG    | trl.core.base | memory-limit-default: completed
-03:05:51 | DEBUG    | trl.core.base | replica-default: not applicable (resource=full-risk-app)
-03:05:51 | INFO     | trl.modules.optimizer.engine | Optimizer completed
+16:45:48 | INFO     | kostral.cli.main | args, Namespace(cmd='optimize', file='./examples/cases/mixed/full-risk-app.yaml', target=None, context=None, verbose=True, dry_run=True, skip_rules=False, allow_rules=False, apply_aks_defaults=False, output=None)
+16:45:48 | INFO     | kostral.modules.optimizer.engine | Initializing optimizer ........
+16:45:48 | INFO     | kostral.modules.optimizer.engine | 2 resources loaded
+16:45:48 | DEBUG    | kostral.core.base | cpu-default: executing (resource=full-risk-app)
+16:45:48 | DEBUG    | kostral.core.base | cpu-default: completed
+16:45:48 | DEBUG    | kostral.core.base | memory-default: executing (resource=full-risk-app)
+16:45:48 | DEBUG    | kostral.core.base | memory-default: completed
+16:45:48 | DEBUG    | kostral.core.base | cpu-limit-default: executing (resource=full-risk-app)
+16:45:48 | DEBUG    | kostral.core.base | cpu-limit-default: completed
+16:45:48 | DEBUG    | kostral.core.base | memory-limit-default: executing (resource=full-risk-app)
+16:45:48 | DEBUG    | kostral.core.base | memory-limit-default: completed
+16:45:48 | DEBUG    | kostral.core.base | replica-default: not applicable (resource=full-risk-app)
+16:45:48 | INFO     | kostral.modules.optimizer.engine | Optimizer completed
 
-03:05:51 | DEBUG    | asyncio | Using selector: KqueueSelector
-03:05:51 | INFO     | trl.modules.validator.engine | Initializing Validator ...
-03:05:51 | DEBUG    | trl.core.base | replica-scaling: not applicable (resource=full-risk-app)
-03:05:51 | DEBUG    | trl.core.base | over-provisioning: not applicable (resource=full-risk-app)
-03:05:51 | DEBUG    | trl.core.base | under-provisioning: not applicable (resource=full-risk-app)
-03:05:51 | DEBUG    | trl.core.base | no-readiness-probe: executing (resource=full-risk-app)
-03:05:51 | DEBUG    | trl.core.base | no-readiness-probe: completed
-03:05:51 | DEBUG    | trl.core.base | no-liveness-probe: executing (resource=full-risk-app)
-03:05:51 | DEBUG    | trl.core.base | no-liveness-probe: completed
-03:05:51 | DEBUG    | trl.core.base | nodeport-exposure: executing (resource=full-risk-service)
-03:05:51 | DEBUG    | trl.core.base | nodeport-exposure: completed
-03:05:51 | INFO     | trl.modules.validator.engine | Validator completed
+16:45:48 | DEBUG    | asyncio | Using selector: KqueueSelector
+16:45:48 | INFO     | kostral.modules.validator.engine | Initializing Validator ...
+16:45:48 | DEBUG    | kostral.core.base | replica-scaling: not applicable (resource=full-risk-app)
+16:45:48 | DEBUG    | kostral.core.base | over-provisioning: not applicable (resource=full-risk-app)
+16:45:48 | DEBUG    | kostral.core.base | under-provisioning: not applicable (resource=full-risk-app)
+16:45:48 | DEBUG    | kostral.core.base | no-readiness-probe: executing (resource=full-risk-app)
+16:45:48 | DEBUG    | kostral.core.base | no-readiness-probe: completed
+16:45:48 | DEBUG    | kostral.core.base | no-liveness-probe: executing (resource=full-risk-app)
+16:45:48 | DEBUG    | kostral.core.base | no-liveness-probe: completed
+16:45:48 | DEBUG    | kostral.core.base | nodeport-exposure: executing (resource=full-risk-service)
+16:45:48 | DEBUG    | kostral.core.base | nodeport-exposure: completed
+16:45:48 | INFO     | kostral.modules.validator.engine | Validator completed
 
-03:05:51 | INFO     | trl.modules.security.engine | Initializing Security check ...
-03:05:51 | DEBUG    | trl.core.base | latest-tag: executing (resource=full-risk-app)
-03:05:51 | DEBUG    | trl.core.base | latest-tag: completed
-03:05:51 | DEBUG    | trl.core.base | privileged-container: executing (resource=full-risk-app)
-03:05:51 | DEBUG    | trl.core.base | privileged-container: completed
-03:05:51 | DEBUG    | trl.core.base | run-as-root: executing (resource=full-risk-app)
-03:05:51 | DEBUG    | trl.core.base | run-as-root: completed
-03:05:51 | INFO     | trl.modules.security.engine | Security check completed
+16:45:48 | INFO     | kostral.modules.security.engine | Initializing Security check ...
+16:45:48 | DEBUG    | kostral.core.base | latest-tag: executing (resource=full-risk-app)
+16:45:48 | DEBUG    | kostral.core.base | latest-tag: completed
+16:45:48 | DEBUG    | kostral.core.base | privileged-container: executing (resource=full-risk-app)
+16:45:48 | DEBUG    | kostral.core.base | privileged-container: completed
+16:45:48 | DEBUG    | kostral.core.base | run-as-root: executing (resource=full-risk-app)
+16:45:48 | DEBUG    | kostral.core.base | run-as-root: completed
+16:45:48 | INFO     | kostral.modules.security.engine | Security check completed
 
-03:05:51 | INFO     | trl.modules.renderer.engine | Initializing Renderer ...
-03:05:51 | INFO     | trl.modules.renderer.engine | Renderer completed
+16:45:48 | INFO     | kostral.modules.renderer.engine | Initializing Renderer ...
+16:45:48 | INFO     | kostral.modules.renderer.engine | Renderer completed
 
-03:05:51 | INFO     | trl.modules.cloud.engine | Dry-run enabled, skipping deployment
+16:45:48 | INFO     | kostral.modules.cloud.engine | Dry-run enabled, skipping deployment
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -152,21 +150,23 @@ Category: network
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📊 Summary
-Errors: 2     Warnings: 4     Optimizations: 4
+Errors: 2	Warnings: 4	Optimizations: 4
 
 ❌ Status: FAILED
 💡 Fix issues before they reach your cluster
 ```
 
 ---
+
 ## 🔄 JSON Output (Pipeline Mode)
 
 ```bash
-python -m trl optimize ./trl/examples/cases/mixed/full-risk-app.yaml --dry-run --verbose --output=json
+  koss optimize ./examples/cases/mixed/full-risk-app.yaml --dry-run --verbose --output=json
 ```
 
 ```
-{ "status": "FAILED",
+{
+  "status": "FAILED",
   "summary": {
     "errors": 2,
     "warnings": 4,
@@ -240,12 +240,11 @@ python -m trl optimize ./trl/examples/cases/mixed/full-risk-app.yaml --dry-run -
   }
 }
 
-
 ```
 ---
 ## 🧠 What This Shows
 
-TRL automatically:
+KOSTRAL automatically:
 
 * Detects **critical security risks** (privileged containers, root access)
 * Identifies **reliability issues** (missing probes)
