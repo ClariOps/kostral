@@ -1,47 +1,47 @@
 
-# TRL — Pre-Deployment Intelligence for Kubernetes
+# KOSTRAL — Pre-Deployment Intelligence for Kubernetes
 
 > Analyze • Optimize • Secure • Validate — before it hits your cluster
 
-TRL helps developers and small teams catch configuration problems, identify resource waste, and spot security risks in Kubernetes manifests before deployment.
+KOSTRAL helps developers and small teams catch configuration problems, identify resource waste, and spot security risks in Kubernetes manifests before deployment.
 
 ## 🎬 Demo
 
-See TRL in action — analyzing a misconfigured Kubernetes manifest in seconds:
+See KOSTRAL in action — analyzing a misconfigured Kubernetes manifest in seconds:
 
-![TRL Demo](./docs/assets/trl-demo.gif)
+![KOSTRAL Demo](./docs/assets/trl-demo.gif)
 
 **Built by ClariOps** — bringing clarity to Kubernetes operations.
 
 ---
 
 
-## 🚀 What is TRL?
+## 🚀 What is KOSTRAL?
 
-TRL is a CLI-first engine that **analyzes and improves Kubernetes manifests before deployment**. 
+KOSTRAL is a CLI-first engine that **analyzes and improves Kubernetes manifests before deployment**. 
 
 It acts as a **pre-deployment intelligence layer**, helping teams detect issues, optimize resources, and enforce best practices.
 
-Deployment is optional — TRL can run purely as an analysis engine or integrate into CI/CD pipelines.
+Deployment is optional — KOSTRAL can run purely as an analysis engine or integrate into CI/CD pipelines.
 
-👉 [See system model for how TRL works conceptually](docs/system-model.md)
+👉 [See system model for how KOSTRAL works conceptually](docs/system-model.md)
 
 ---
 
 ## 📚 Documentation
 
-TRL documentation is structured across multiple layers ([CLI Reference](./usage.md), architecture, system model, guarantees, vision).
+KOSTRAL documentation is structured across multiple layers ([CLI Reference](./usage.md), architecture, system model, guarantees, vision).
 
 👉 Start here: | [Documentation Index](docs/README.md)
        
 
 ---
 
-## 🔥 Why TRL?
+## 🔥 Why KOSTRAL?
 
 Unlike traditional tools that focus only on linting or validation:
 
-- TRL combines validation, security, and optimization in a single run
+- KOSTRAL combines validation, security, and optimization in a single run
 - Provides actionable fixes (not just warnings)
 - Focuses on pre-deployment intelligence, not post-failure debugging
 - Designed for clarity and fast feedback, not complex pipelines
@@ -52,7 +52,7 @@ Unlike traditional tools that focus only on linting or validation:
 |------------|-----------|----------|-------------|---------|
 | kube-score | ✅        | ❌       | ❌          | ❌      |
 | trivy      | ❌        | ✅       | ❌          | ❌      |
-| TRL        | ✅        | ✅       | ✅          | 🚧      |
+| KOSTRAL        | ✅        | ✅       | ✅          | 🚧      |
 
 ## 🎯 The Problem
 
@@ -72,7 +72,7 @@ Most tools detect problems **after deployment**.
 
 ## 💡 The Solution
 
-TRL shifts validation **left** — into the development phase.
+KOSTRAL shifts validation **left** — into the development phase.
 
 It automatically:
 
@@ -98,7 +98,7 @@ Before anything reaches your cluster.
 
 ### 🔌 Modular Engine Design
 
-TRL is built from independent engines that can be composed into workflows.
+KOSTRAL is built from independent engines that can be composed into workflows.
 
 The default workflow is:
 
@@ -114,34 +114,35 @@ See `docs/system-model.md` and `docs/architecture.md` for the full model.
 
 ```bash
 git clone <repo>
-cd trl
+cd kostral
 pip install -r requirements.txt
+pip install -e .
 
 ### Analyze (Fastest)
 
-python -m trl explain ./examples/demo/bad.yaml
+koss explain ./examples/demo/bad.yaml
 
 ### Analyze + Optimize (Recommended)
 
-python -m trl optimize ./examples/demo/bad.yaml --dry-run
+koss optimize ./examples/demo/bad.yaml --dry-run
 
 ### Deploy (Optional)
 
-python -m trl optimize ./examples/demo/good.yaml --target=local
+koss optimize ./examples/demo/good.yaml --target=local
 ```
 
 ---
 ## 🧭 Command Guide
 
-TRL provides different ways to use the same independent engines.
+KOSTRAL provides different ways to use the same independent engines.
 
 | Command | Workflow | Purpose |
 | :--- | :--- | :--- |
-| `trl explain` | `Validator → Security` | Analyze the input without running the Optimizer |
-| `trl optimize` | `Optimizer → Validator → Security` | Optimize the deployment state, then analyze the resulting state |
-| `trl remote` | User-defined workflow | Execute a workflow that can invoke engines through remote HTTP clients |
-| `trl run` | User-defined workflow | Execute TRL DSL workflows *(currently on hold)* |
-| `trl generate` | CLI-defined input | Create a Deployment from CLI parameters *(currently on hold)* |
+| `koss explain` | `Validator → Security` | Analyze the input without running the Optimizer |
+| `koss optimize` | `Optimizer → Validator → Security` | Optimize the deployment state, then analyze the resulting state |
+| `koss remote` | User-defined workflow | Execute a workflow that can invoke engines through remote HTTP clients |
+| `koss run` | User-defined workflow | Execute KOSTRAL DSL workflows *(currently on hold)* |
+| `koss generate` | CLI-defined input | Create a Deployment from CLI parameters *(currently on hold)* |
 
 ### 🔌 Engine Composition
 
@@ -169,13 +170,13 @@ while `optimize` uses the normal preparation workflow:
 Optimizer → Validator → Security
 ```
 
-This allows TRL to remain plug-and-play while still providing predictable default workflows.
+This allows KOSTRAL to remain plug-and-play while still providing predictable default workflows.
 
 ---
 
 ### 🌐 Remote Engine Composition
 
-TRL includes an experimental remote composition example that demonstrates
+KOSTRAL includes an experimental remote composition example that demonstrates
 how engines can run as separate processes and be invoked through HTTP.
 
 The example uses:
@@ -193,7 +194,7 @@ Run the example from the repository root after starting the three engine
 servers:
 
 ```bash
-trl remote ./examples/demo/bad.yaml \
+koss remote ./examples/demo/bad.yaml \
   --exec ./examples/remote/workflow.py
 
 ```
@@ -212,14 +213,14 @@ see [remote-engines.md](./remote-engines.md)
 
 ## 📊 Output Formats
 
-TRL can produce results in different formats depending on the use case.
+KOSTRAL can produce results in different formats depending on the use case.
 
 ### CLI
 
 Human-readable output for developers:
 
 ```bash
-trl explain ./manifest.yaml
+koss explain ./manifest.yaml
 ```
 
 ### JSON
@@ -227,7 +228,7 @@ trl explain ./manifest.yaml
 Machine-readable output for CI/CD and automation:
 
 ```bash
-trl explain ./manifest.yaml --output=json
+koss explain ./manifest.yaml --output=json
 ```
 
 ### YAML
@@ -235,10 +236,10 @@ trl explain ./manifest.yaml --output=json
 Manifest output for workflows that need the resulting Kubernetes configuration:
 
 ```bash
-trl optimize ./manifest.yaml --output=yaml
+koss optimize ./manifest.yaml --output=yaml
 ```
 
-These formats represent the same TRL processing results for different consumers:
+These formats represent the same KOSTRAL processing results for different consumers:
 
 ```text
 Developer       → CLI
@@ -253,7 +254,7 @@ When using `--verbose`, the selected reporting mode controls how detailed inform
 
 ### CLI (Developer)
 ```bash
-   python -m trl explain ./trl/examples/demo/bad.yaml 
+   koss explain ./examples/demo/bad.yaml 
 ```
 Output:
 
@@ -291,7 +292,7 @@ Errors: 0	Warnings: 6	Optimizations: 0
 
 ### JSON (CI/CD / Tools)
 ```bash
-   python -m trl explain ./trl/examples/demo/bad.yaml --output=json 
+   koss explain ./examples/demo/bad.yaml --output=json 
 ```
 Output:
 
@@ -352,7 +353,7 @@ Output:
 
 ### YAML (Kubernetes)
 ```bash
-   python -m trl explain ./trl/examples/demo/bad.yaml --output=yaml 
+   koss explain ./examples/demo/bad.yaml --output=yaml 
 ```
 
 Output: 
@@ -413,25 +414,25 @@ examples/demo/good.yaml  # optimized version
 Run:
 
 ```bash
-trl optimize ./examples/demo/bad.yaml --dry-run
+koss optimize ./examples/demo/bad.yaml --dry-run
 ```
 Run with Deployment(Optional):
 ```bash
-trl optimize ./examples/demo/bad.yaml --target=local
+koss optimize ./examples/demo/bad.yaml --target=local
 ```
 
 
 ---
 ## 🔄 CI/CD Integration
 
-TRL is designed to run in pipelines.
+KOSTRAL is designed to run in pipelines.
 
 Example using GitHub Actions:
 
 ```yaml
-- name: Run TRL
+- name: Run KOSTRAL
   run: |
-    python -m trl optimize ./k8s.yaml --dry-run --output=json > report.json
+    koss optimize ./k8s.yaml --dry-run --output=json > report.json
 
 - name: Fail if issues found
   run: |
@@ -442,20 +443,20 @@ Example using GitHub Actions:
 
 ## 📦 Helm Support
 
-TRL does not directly parse Helm charts.
+KOSTRAL does not directly parse Helm charts.
 
 Instead, it works with **rendered Kubernetes manifests**, enabling seamless integration with Helm workflows.
 
 ```bash 
 helm create mychart
-helm template ./examples/helmCharts/mychart | python -m trl optimize - --dry-run 
+helm template ./examples/helmCharts/mychart | koss optimize - --dry-run 
 ```
 
 This approach:
 
 * avoids re-implementing Helm
 * works with any chart
-* keeps TRL lightweight and fast
+* keeps KOSTRAL lightweight and fast
 
 Native Helm support is planned in future releases.
 
@@ -463,7 +464,7 @@ Native Helm support is planned in future releases.
 
 ## 🏗 How It Works
 
-TRL follows a pipeline-based architecture:
+KOSTRAL follows a pipeline-based architecture:
 
 1. Load manifests → convert into IR (Intermediate Representation)
 2. Run engines in order:
@@ -513,7 +514,7 @@ be treated as the architectural model for future engines.
 
 In particular, the current implementation contains target-specific
 deployment behavior that is intentionally not representative of the
-core TRL engine model.
+core KOSTRAL engine model.
 
 The architectural model requires engine responsibilities and mutations
 to be explicit and composable. Environment-specific preparation or
@@ -557,4 +558,4 @@ We are currently stabilizing the core system, so we recommend reviewing the cont
 
 ClariOps builds developer-first tools focused on clarity, reliability, and intelligence in Kubernetes and DevOps.
 
-TRL is the first step toward a broader platform for pre-deployment intelligence.
+KOSTRAL is the first step toward a broader platform for pre-deployment intelligence.

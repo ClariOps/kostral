@@ -19,11 +19,13 @@ jobs:
           python-version: "3.11"
 
       - name: Install kostral
-        run: pip install -r requirements.txt
+        run: | 
+          pip install -r requirements.txt
+          pip install -e .  
 
       - name: Run kostral
         run: |
-          python -m kostral optimize ./examples/demo/good.yaml --dry-run --output=json > report.json
+          koss optimize ./examples/demo/good.yaml --dry-run --output=json > report.json
 
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq

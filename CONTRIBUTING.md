@@ -1,8 +1,8 @@
-# 🤝 Contributing to TRL
+# 🤝 Contributing to KOSTRAL
 
-Thanks for contributing to TRL.
+Thanks for contributing to KOSTRAL.
 
-TRL is designed to grow through small, isolated contributions while keeping the core architecture predictable.
+KOSTRAL is designed to grow through small, isolated contributions while keeping the core architecture predictable.
 
 The easiest way to contribute is to add or improve a **rule**.
 
@@ -10,9 +10,9 @@ However, contributions are not limited to rules. Bug fixes, tests, documentation
 
 ---
 
-# 🧭 1. Understand TRL First
+# 🧭 1. Understand KOSTRAL First
 
-TRL is a pre-deployment intelligence system for Kubernetes.
+KOSTRAL is a pre-deployment intelligence system for Kubernetes.
 
 At a high level:
 
@@ -54,7 +54,7 @@ The engines remain independent modules.
 
 # 🔌 2. Engine Independence
 
-TRL engines are designed to be:
+KOSTRAL engines are designed to be:
 
 - self-contained
 - independently testable
@@ -350,7 +350,7 @@ The modules themselves remain independently defined.
 
 # 9. Remote Engine Composition
 
-TRL includes an experimental remote invocation mechanism that allows engines to run in separate processes and be invoked through HTTP as part of a workflow.
+KOSTRAL includes an experimental remote invocation mechanism that allows engines to run in separate processes and be invoked through HTTP as part of a workflow.
 
 The purpose is to demonstrate that engine execution does not have to be limited to a single process.
 
@@ -472,7 +472,7 @@ Future capabilities should be documented only when they are implemented and supp
 
 # 10. Current Mutation Boundary
 
-TRL's current mutation behavior is associated with the responsibilities of its individual engines.
+KOSTRAL's current mutation behavior is associated with the responsibilities of its individual engines.
 
 When changing or introducing mutation behavior:
 
@@ -520,7 +520,7 @@ A contribution should improve the project without introducing unnecessary coupli
 
 # 13. Final Principle
 
-TRL aims to keep engine responsibilities independent and workflows composable.
+KOSTRAL aims to keep engine responsibilities independent and workflows composable.
 
 Contributors should be able to understand, improve, and extend individual parts of the system without needing to own the entire implementation.
 
@@ -548,7 +548,7 @@ They are documented and maintained through:
 - rule design
 - contributor conventions
 
-TRL does not currently have a separate runtime "contract authority" that grants mutation permission.
+KOSTRAL does not currently have a separate runtime "contract authority" that grants mutation permission.
 
 If a future engine requires mutation, its responsibility and mutation behavior must be explicitly defined when that engine is introduced.
 
@@ -633,7 +633,7 @@ Before proposing:
 
 discuss the design first.
 
-These changes can affect multiple parts of TRL.
+These changes can affect multiple parts of KOSTRAL.
 
 A useful distinction is:
 
@@ -665,7 +665,7 @@ It means they should be designed deliberately before implementation.
 
 # 🔮 14. Future Extension Points
 
-TRL may eventually support capabilities such as:
+KOSTRAL may eventually support capabilities such as:
 
 ```text
 AutoFix
@@ -683,7 +683,7 @@ When they become implemented extension points, their contribution rules should b
 
 # 📋 15. What Should I Contribute?
 
-If you are new to TRL:
+If you are new to KOSTRAL:
 
 ```text
 Start here
@@ -718,7 +718,7 @@ Implement
 
 # 🎯 16. The Main Principle
 
-TRL should remain easy to extend without becoming difficult to understand.
+KOSTRAL should remain easy to extend without becoming difficult to understand.
 
 The goal is:
 
