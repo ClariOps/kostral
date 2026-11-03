@@ -6,4 +6,4 @@ venv/
 kostral.egg-info
 kostral_alias
 dist
-assets
+extra
