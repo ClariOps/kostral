@@ -1,9 +1,9 @@
 
-# 🚀 KOSTRAL — Product Vision
+# 🚀 Kostral — Product Vision
 
 ## 🧭 Vision
 
-KOSTRAL exists to make Kubernetes deployments **safe, efficient, and predictable** — without requiring deep infrastructure expertise.
+Kostral exists to make Kubernetes deployments **safe, efficient, and predictable** — without requiring deep infrastructure expertise.
 
 It acts as a **pre-deployment intelligence layer**, enabling teams to ship confidently with minimal configuration and zero guesswork.
 
@@ -13,7 +13,7 @@ It acts as a **pre-deployment intelligence layer**, enabling teams to ship confi
 
 > Eliminate misconfiguration, overprovisioning, and hidden risks before they reach production.
 
-KOSTRAL ensures that every deployment is:
+Kostral ensures that every deployment is:
 
 * resource-efficient
 * secure by default
@@ -43,9 +43,9 @@ Most tools either:
 
 ## 💡 The Approach
 
-KOSTRAL shifts deployment intelligence **left** into the development phase.
+Kostral shifts deployment intelligence **left** into the development phase.
 
-Instead of relying on manual tuning or post-deployment fixes, KOSTRAL:
+Instead of relying on manual tuning or post-deployment fixes, Kostral:
 
 * analyzes manifests before deployment
 * applies intelligent optimizations
@@ -60,7 +60,7 @@ Instead of relying on manual tuning or post-deployment fixes, KOSTRAL:
 
 Users should not need to manually tune infrastructure parameters.
 
-KOSTRAL makes informed decisions based on best practices and safe defaults.
+Kostral makes informed decisions based on best practices and safe defaults.
 
 ---
 
@@ -76,7 +76,7 @@ A minimal interface backed by a structured decision engine.
 
 ### 3. Transparency Over Magic
 
-KOSTRAL does not hide decisions.
+Kostral does not hide decisions.
 
 Every issue, impact, and fix is explicitly reported.
 
@@ -92,7 +92,7 @@ No hidden side effects. No implicit mutations.
 
 ### 5. Engine-First Design
 
-KOSTRAL is not just a CLI tool.
+Kostral is not just a CLI tool.
 
 It is a **modular intelligence engine** that can evolve into:
 
@@ -122,7 +122,7 @@ It is a **modular intelligence engine** that can evolve into:
 
 ### 3. Execution Layer (Optional)
 
-* Deployment is optional and not required for KOSTRAL core usage
+* Deployment is optional and not required for Kostral core usage
 * Responsible only for applying already-processed manifests
 * Does not perform analysis or mutation
 
@@ -150,7 +150,7 @@ It is a **modular intelligence engine** that can evolve into:
 
 ## 🚧 Non-Goals (Current Phase)
 
-KOSTRAL intentionally does NOT:
+Kostral intentionally does NOT:
 
 * Perform runtime orchestration or monitoring
 * Replace Kubernetes tools (kubectl, Helm)
@@ -163,7 +163,7 @@ KOSTRAL intentionally does NOT:
 
 ## 🗺 Direction
 
-KOSTRAL evolves in structured phases:
+Kostral evolves in structured phases:
 
 ### 1. Stability & Trust (Current)
 - Deterministic engine
@@ -198,7 +198,7 @@ KOSTRAL evolves in structured phases:
 
 ## 🎯 Summary
 
-KOSTRAL transforms Kubernetes deployment from:
+Kostral transforms Kubernetes deployment from:
 
 ❌ manual tuning + reactive debugging
 

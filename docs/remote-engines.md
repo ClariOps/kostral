@@ -1,7 +1,7 @@
 
 # Remote Engine Composition
 
-KOSTRAL includes an experimental remote engine composition example.
+Kostral includes an experimental remote engine composition example.
 
 It demonstrates how independent engines can run in separate processes and be invoked through HTTP as part of a user-defined workflow.
 
@@ -13,12 +13,12 @@ It is not a production-ready distributed execution platform.
 
 ## 1. What This Demonstrates
 
-In a traditional local workflow, engines execute within the same KOSTRAL process.
+In a traditional local workflow, engines execute within the same Kostral process.
 
 The remote example demonstrates another arrangement:
 
 ```text
-                 KOSTRAL Workflow
+                 Kostral Workflow
                       |
                       v
               HTTPModuleClient
@@ -511,4 +511,4 @@ It does not change which responsibility the engine owns.
 
 The workflow determines the composition. The engine remains responsible for its own processing logic.
 
-This is the current foundation demonstrated by KOSTRAL's remote engine example.
+This is the current foundation demonstrated by Kostral's remote engine example.

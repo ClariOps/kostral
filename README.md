@@ -1,52 +1,62 @@
 
-# KOSTRAL — Pre-Deployment Intelligence for Kubernetes
+<p align="center">
+  <img
+    src="docs/assets/kostral-logo.svg"
+    alt="Kostral"
+    height="36"
+    style="vertical-align: middle;"
+  />
+  <span style="vertical-align: middle;">
+    &nbsp; — &nbsp; pre-deployment decision system for Kubernetes 
+  </span>
+</p>
 
 > Analyze • Optimize • Secure • Validate — before it hits your cluster
 
-KOSTRAL helps developers and small teams catch configuration problems, identify resource waste, and spot security risks in Kubernetes manifests before deployment.
+Kostral helps developers and small teams catch configuration problems, identify resource waste, and spot security risks in Kubernetes manifests before deployment.
 
 **Built by ClariOps** — bringing clarity to Kubernetes operations.
 
 ---
 
 
-## 🚀 What is KOSTRAL?
+## 🚀 What is Kostral?
 
-KOSTRAL is a CLI-first engine that **analyzes and improves Kubernetes manifests before deployment**. 
+Kostral is a CLI-first engine that **analyzes and improves Kubernetes manifests before deployment**. 
 
 It acts as a **pre-deployment intelligence layer**, helping teams detect issues, optimize resources, and enforce best practices.
 
-Deployment is optional — KOSTRAL can run purely as an analysis engine or integrate into CI/CD pipelines.
+Deployment is optional — Kostral can run purely as an analysis engine or integrate into CI/CD pipelines.
 
-👉 [See system model for how KOSTRAL works conceptually](docs/system-model.md)
+👉 [See system model for how Kostral works conceptually](docs/system-model.md)
 
 ---
 
 ## 📚 Documentation
 
-KOSTRAL documentation is structured across multiple layers ([CLI Reference](./usage.md), architecture, system model, guarantees, vision).
+Kostral documentation is structured across multiple layers ([CLI Reference](docs/usage.md), architecture, system model, guarantees, vision).
 
 👉 Start here: | [Documentation Index](docs/README.md)
        
 
 ---
 
-## 🔥 Why KOSTRAL?
+## 🔥 Why Kostral?
 
 Unlike traditional tools that focus only on linting or validation:
 
-- KOSTRAL combines validation, security, and optimization in a single run
+- Kostral combines validation, security, and optimization in a single run
 - Provides actionable fixes (not just warnings)
 - Focuses on pre-deployment intelligence, not post-failure debugging
 - Designed for clarity and fast feedback, not complex pipelines
 
 ## ⚖️ Comparison
 
-| Tool        | Validation | Security | Optimization | Auto Fix |
-|------------|-----------|----------|-------------|---------|
-| kube-score | ✅        | ❌       | ❌          | ❌      |
-| trivy      | ❌        | ✅       | ❌          | ❌      |
-| KOSTRAL        | ✅        | ✅       | ✅          | 🚧      |
+| Tool        | Validation | Security | Optimization | Dedicated AutoFix Engine |
+|------------|-----------|----------|-------------|-----------------------------|
+| kube-score | ✅        | ❌       | ❌          | ❌                           |
+| trivy      | ❌        | ✅       | ❌          | ❌                           |
+| Kostral        | ✅        | ✅       | ✅          | 🚧                        |
 
 ## 🎯 The Problem
 
@@ -66,7 +76,7 @@ Most tools detect problems **after deployment**.
 
 ## 💡 The Solution
 
-KOSTRAL shifts validation **left** — into the development phase.
+Kostral shifts validation **left** — into the development phase.
 
 It automatically:
 
@@ -92,7 +102,7 @@ Before anything reaches your cluster.
 
 ### 🔌 Modular Engine Design
 
-KOSTRAL is built from independent engines that can be composed into workflows.
+Kostral is built from independent engines that can be composed into workflows.
 
 The default workflow is:
 
@@ -107,9 +117,8 @@ See `docs/system-model.md` and `docs/architecture.md` for the full model.
 ## 🔥 Quick Start
 
 ```bash
-git clone <repo>
+git clone https://github.com/ClariOps/kostral.git
 cd kostral
-pip install -r requirements.txt
 pip install -e .
 
 ### Analyze (Fastest)
@@ -128,14 +137,14 @@ koss optimize ./examples/demo/good.yaml --target=local
 ---
 ## 🧭 Command Guide
 
-KOSTRAL provides different ways to use the same independent engines.
+Kostral provides different ways to use the same independent engines.
 
 | Command | Workflow | Purpose |
 | :--- | :--- | :--- |
 | `koss explain` | `Validator → Security` | Analyze the input without running the Optimizer |
 | `koss optimize` | `Optimizer → Validator → Security` | Optimize the deployment state, then analyze the resulting state |
 | `koss remote` | User-defined workflow | Execute a workflow that can invoke engines through remote HTTP clients |
-| `koss run` | User-defined workflow | Execute KOSTRAL DSL workflows *(currently on hold)* |
+| `koss run` | User-defined workflow | Execute Kostral DSL workflows *(currently on hold)* |
 | `koss generate` | CLI-defined input | Create a Deployment from CLI parameters *(currently on hold)* |
 
 ### 🔌 Engine Composition
@@ -164,13 +173,13 @@ while `optimize` uses the normal preparation workflow:
 Optimizer → Validator → Security
 ```
 
-This allows KOSTRAL to remain plug-and-play while still providing predictable default workflows.
+This allows Kostral to remain plug-and-play while still providing predictable default workflows.
 
 ---
 
 ### 🌐 Remote Engine Composition
 
-KOSTRAL includes an experimental remote composition example that demonstrates
+Kostral includes an experimental remote composition example that demonstrates
 how engines can run as separate processes and be invoked through HTTP.
 
 The example uses:
@@ -201,13 +210,13 @@ distributed execution platform.
 See Remote Engine Composition for the setup,
 execution flow, and current limitations.
 
-see [remote-engines.md](./remote-engines.md)
+see [remote-engines.md](docs/remote-engines.md)
 
 ---  
 
 ## 📊 Output Formats
 
-KOSTRAL can produce results in different formats depending on the use case.
+Kostral can produce results in different formats depending on the use case.
 
 ### CLI
 
@@ -233,7 +242,7 @@ Manifest output for workflows that need the resulting Kubernetes configuration:
 koss optimize ./manifest.yaml --output=yaml
 ```
 
-These formats represent the same KOSTRAL processing results for different consumers:
+These formats represent the same Kostral processing results for different consumers:
 
 ```text
 Developer       → CLI
@@ -419,12 +428,12 @@ koss optimize ./examples/demo/bad.yaml --target=local
 ---
 ## 🔄 CI/CD Integration
 
-KOSTRAL is designed to run in pipelines.
+Kostral is designed to run in pipelines.
 
 Example using GitHub Actions:
 
 ```yaml
-- name: Run KOSTRAL
+- name: Run Kostral
   run: |
     koss optimize ./k8s.yaml --dry-run --output=json > report.json
 
@@ -437,7 +446,7 @@ Example using GitHub Actions:
 
 ## 📦 Helm Support
 
-KOSTRAL does not directly parse Helm charts.
+Kostral does not directly parse Helm charts.
 
 Instead, it works with **rendered Kubernetes manifests**, enabling seamless integration with Helm workflows.
 
@@ -450,7 +459,7 @@ This approach:
 
 * avoids re-implementing Helm
 * works with any chart
-* keeps KOSTRAL lightweight and fast
+* keeps Kostral lightweight and fast
 
 Native Helm support is planned in future releases.
 
@@ -458,7 +467,7 @@ Native Helm support is planned in future releases.
 
 ## 🏗 How It Works
 
-KOSTRAL follows a pipeline-based architecture:
+Kostral follows a pipeline-based architecture:
 
 1. Load manifests → convert into IR (Intermediate Representation)
 2. Run engines in order:
@@ -508,7 +517,7 @@ be treated as the architectural model for future engines.
 
 In particular, the current implementation contains target-specific
 deployment behavior that is intentionally not representative of the
-core KOSTRAL engine model.
+core Kostral engine model.
 
 The architectural model requires engine responsibilities and mutations
 to be explicit and composable. Environment-specific preparation or
@@ -552,4 +561,4 @@ We are currently stabilizing the core system, so we recommend reviewing the cont
 
 ClariOps builds developer-first tools focused on clarity, reliability, and intelligence in Kubernetes and DevOps.
 
-KOSTRAL is the first step toward a broader platform for pre-deployment intelligence.
+Kostral is the first step toward a broader platform for pre-deployment intelligence.

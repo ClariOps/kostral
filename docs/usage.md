@@ -1,8 +1,8 @@
-# KOSTRAL CLI Reference
+# Kostral CLI Reference
 
 > Pre-deployment analysis and optimization for Kubernetes manifests.
 
-KOSTRAL provides a small CLI surface for analyzing, optimizing, and running Kubernetes workflows.
+Kostral provides a small CLI surface for analyzing, optimizing, and running Kubernetes workflows.
 
 ## Synopsis
 
@@ -26,7 +26,7 @@ koss <command> --help
 | `explain` | Analyze a manifest without optimization |
 | `optimize` | Optimize, validate, assess security, and produce the resulting state |
 | `remote` | Execute a user-defined workflow that can invoke remote engines |
-| `run` | Run a KOSTRAL workflow from a Python DSL input |
+| `run` | Run a Kostral workflow from a Python DSL input |
 | `generate` | CLI-based Deployment input |
 
 > `run` and `generate` use the Manifest Preparation Engine. Both commands are currently on hold and may be reintroduced later. 
@@ -198,7 +198,7 @@ koss remote ./examples/demo/bad.yaml \
 
 # `koss run`
 
-Run a KOSTRAL workflow from a Python DSL input.
+Run a Kostral workflow from a Python DSL input.
 
 ## Usage
 
@@ -233,7 +233,7 @@ examples/
     └── app.py
 ```
 
-The application defines Kubernetes resources with the KOSTRAL DSL:
+The application defines Kubernetes resources with the Kostral DSL:
 
 ```python
 from kostral.dsl import deployment, pvc
@@ -262,7 +262,7 @@ Run it with:
 koss run ./examples/dsl/app.py
 ```
 
-`app.py` is the Python DSL input; KOSTRAL loads the user-defined IR and runs the selected workflow.
+`app.py` is the Python DSL input; Kostral loads the user-defined IR and runs the selected workflow.
 
 > `koss run` is currently on hold and may be reinitiated later.
 
@@ -313,7 +313,7 @@ koss generate   --name backend   --cpu 500m   --memory 512Mi   --image nginx:1.2
 --output=yaml
 ```
 
-Without `--output`, KOSTRAL uses its human-readable CLI reporting path.
+Without `--output`, Kostral uses its human-readable CLI reporting path.
 
 ### JSON
 
@@ -345,7 +345,7 @@ This preserves YAML as machine-consumable output.
 
 # Standard Input and Piping
 
-KOSTRAL accepts a manifest path as command input.
+Kostral accepts a manifest path as command input.
 
 For rendered Kubernetes YAML, a Unix-style pipeline can be used where the current input loader supports standard input:
 

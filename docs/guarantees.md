@@ -1,15 +1,15 @@
 ## ⚖️ Role of This Document
 
-This document defines the **strict behavioral contract** of KOSTRAL.
+This document defines the **strict behavioral contract** of Kostral.
 
 - Architecture describes *how the system is built*
 - Guarantees define *how the system must behave*
 
 In case of conflict, **guarantees take precedence**.
 
-# 🔒 KOSTRAL Guarantees
+# 🔒 Kostral Guarantees
 
-KOSTRAL is designed to provide **predictable, transparent, and safe pre-deployment intelligence** for Kubernetes.
+Kostral is designed to provide **predictable, transparent, and safe pre-deployment intelligence** for Kubernetes.
 
 This document defines the **non-negotiable guarantees** that govern system behavior, rule design, and execution flow.
 
@@ -19,7 +19,7 @@ This document defines the **non-negotiable guarantees** that govern system behav
 
 > Same input → same output → same decisions
 
-KOSTRAL is deterministic, explicit, and free from hidden behavior.
+Kostral is deterministic, explicit, and free from hidden behavior.
 
 ---
 
@@ -35,7 +35,7 @@ KOSTRAL is deterministic, explicit, and free from hidden behavior.
 
 ### 2. 🔒 IR Mutation Boundary
 
-> **Within the current KOSTRAL architecture, IR mutation is limited to engine responsibilities that explicitly allow it.**
+> **Within the current Kostral architecture, IR mutation is limited to engine responsibilities that explicitly allow it.**
 
 Currently:
 
@@ -140,7 +140,7 @@ Additionally:
 
 ### 9. No Cross-Resource Logic (Current Phase)
 
-KOSTRAL supports analyzing multiple Kubernetes resources across files and directories.
+Kostral supports analyzing multiple Kubernetes resources across files and directories.
 
 However:
 
@@ -159,7 +159,7 @@ This ensures:
 ---
 ### 10. Future: Relationship-Aware Analysis
 
-KOSTRAL will evolve to include a **Relationship Engine** responsible for cross-resource analysis.
+Kostral will evolve to include a **Relationship Engine** responsible for cross-resource analysis.
 
 This engine will:
 
@@ -186,7 +186,7 @@ This preserves the core guarantee:
 
 ### 11. Environment-Aware Behavior (Future)
 
-KOSTRAL may support environment-specific behavior through an Adapter Layer.
+Kostral may support environment-specific behavior through an Adapter Layer.
 
 The Adapter Layer:
 
@@ -209,7 +209,7 @@ defined.
 
 ### 12. CLI Simplicity
 
-KOSTRAL must remain:
+Kostral must remain:
 
 * simple to run
 * fast to execute
@@ -219,22 +219,22 @@ Output must prioritize clarity over complexity.
 
 ---
 
-## 🚫 What KOSTRAL Does NOT Guarantee
+## 🚫 What Kostral Does NOT Guarantee
 
-KOSTRAL intentionally does NOT:
+Kostral intentionally does NOT:
 
 * Guarantee perfect optimization for every workload
 * Replace Kubernetes tools (kubectl, Helm)
 * Manage runtime orchestration
 * Provide post-deployment monitoring
 
-KOSTRAL focuses strictly on **pre-deployment intelligence**
+Kostral focuses strictly on **pre-deployment intelligence**
 
 ---
 
 ## 🔮 Future Guarantees (Planned)
 
-As KOSTRAL evolves, additional guarantees may include:
+As Kostral evolves, additional guarantees may include:
 
 * Safe and controlled auto-fix engine
 * Cross-resource awareness
@@ -245,7 +245,7 @@ As KOSTRAL evolves, additional guarantees may include:
 
 ## 🧩 Future Extension: Auto-Fix Model
 
-KOSTRAL may introduce a separate **AutoFix Engine** to apply fixes safely.
+Kostral may introduce a separate **AutoFix Engine** to apply fixes safely.
 
 ### Planned Flow:
 
@@ -266,7 +266,7 @@ Optimizer → Validator → Security → AutoFix → Renderer
 
 ## 🧠 Final Principle
 
-> KOSTRAL makes decisions visible, not magical.
+> Kostral makes decisions visible, not magical.
 
 Users should always understand:
 
@@ -278,7 +278,7 @@ Users should always understand:
 
 ## 🎯 Summary
 
-KOSTRAL guarantees:
+Kostral guarantees:
 
 * Predictability
 * Transparency

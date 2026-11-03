@@ -1,6 +1,6 @@
-# 🧠 KOSTRAL System Model
+# 🧠 Kostral System Model
 
-This document explains how KOSTRAL should be **understood**.
+This document explains how Kostral should be **understood**.
 
 It describes the system's mental model, responsibilities, and flow.
 
@@ -12,9 +12,9 @@ For contribution rules, see `CONTRIBUTING.md`.
 
 ---
 
-# 🎯 1. What Is KOSTRAL?
+# 🎯 1. What Is Kostral?
 
-KOSTRAL is a:
+Kostral is a:
 
 > **Pre-deployment decision system for Kubernetes.**
 
@@ -27,7 +27,7 @@ What is risky?
 What would the resulting deployment look like?
 ```
 
-KOSTRAL operates before optional execution.
+Kostral operates before optional execution.
 
 ```text
 Traditional
@@ -35,7 +35,7 @@ Traditional
 Write → Deploy → Discover Problems
 
 
-KOSTRAL
+Kostral
 
 Write → Analyze → Prepare → Render → Decide → Optional Execution
 ```
@@ -46,9 +46,9 @@ The fundamental shift is:
 
 ---
 
-# 🧠 2. The KOSTRAL Mental Model
+# 🧠 2. The Kostral Mental Model
 
-Think of KOSTRAL as four conceptual steps:
+Think of Kostral as four conceptual steps:
 
 ```text
         UNDERSTAND
@@ -158,7 +158,7 @@ These are separate concepts.
 
 # 🧭 6. Current Default Flow
 
-The current default KOSTRAL flow is:
+The current default Kostral flow is:
 
 ```text
 Input
@@ -354,7 +354,7 @@ Future engines may have different capabilities when they are explicitly designed
 
 # 🔮 10. Future Engines
 
-KOSTRAL may eventually gain additional capabilities.
+Kostral may eventually gain additional capabilities.
 
 For example:
 
@@ -388,7 +388,7 @@ Future engines should not be forced into an existing engine simply because they 
 
 # 🌐 11. Cross-Resource Intelligence
 
-Current KOSTRAL analysis is resource-oriented.
+Current Kostral analysis is resource-oriented.
 
 Conceptually:
 
@@ -398,7 +398,7 @@ Service    → analyzed independently
 Ingress    → analyzed independently
 ```
 
-KOSTRAL does not currently infer relationships between these resources.
+Kostral does not currently infer relationships between these resources.
 
 A future Relationship Engine may introduce:
 
@@ -410,7 +410,7 @@ Deployment
       └──── Ingress
 ```
 
-This would allow KOSTRAL to reason about system-level relationships.
+This would allow Kostral to reason about system-level relationships.
 
 ---
 
@@ -449,7 +449,7 @@ This keeps the responsibilities understandable.
 
 # ☁️ 13. Environment Awareness
 
-The KOSTRAL core should remain environment-agnostic.
+The Kostral core should remain environment-agnostic.
 
 Conceptually:
 
@@ -474,7 +474,7 @@ Environment-specific adapters are a future extension.
 
 # 🧠 14. The Most Important Distinction
 
-There are four different concepts in KOSTRAL:
+There are four different concepts in Kostral:
 
 ```text
 RESPONSIBILITY
@@ -527,7 +527,7 @@ Workflow ≠ Engine Dependency
 # 🎯 15. KOSTRAL in One Diagram
 
 ```text
-                         KOSTRAL
+                         Kostral
                           │
                           ▼
                          IR
@@ -559,9 +559,9 @@ Workflow ≠ Engine Dependency
 
 ---
 
-# 🚀 16. The KOSTRAL Mental Model
+# 🚀 16. The Kostral Mental Model
 
-When thinking about KOSTRAL, remember:
+When thinking about Kostral, remember:
 
 ```text
 1. Engines own responsibilities.
@@ -581,4 +581,4 @@ When thinking about KOSTRAL, remember:
 8. Rendering and execution are separate from preparation.
 ```
 
-> **KOSTRAL separates responsibility, capability, workflow, and execution so that the system can grow without making its behavior difficult to understand.**
+> **Kostral separates responsibility, capability, workflow, and execution so that the system can grow without making its behavior difficult to understand.**

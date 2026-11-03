@@ -1,6 +1,7 @@
 import os, argparse
 from kostral.core.ir import (DeploymentIR, ServiceIR, HelmIR, IngressIR, ConfigMapIR, SecretIR, PVCIR)
 import importlib.util
+from colorama import Fore, Style, init
 
 IR_MAPPING = {
     "Deployment": DeploymentIR,
@@ -117,7 +118,8 @@ Analyze • Optimize • Validate • Secure
 
 "Making Kubernetes predictable before it runs"
 """
-    print(banner)
+    init(autoreset=True)
+    print(Fore.GREEN + banner + Style.RESET_ALL)
 
 
 def valid_file(path):

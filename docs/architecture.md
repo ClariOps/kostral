@@ -1,6 +1,6 @@
-# 🏗 KOSTRAL Architecture
+# 🏗 Kostral Architecture
 
-KOSTRAL is a pipeline-based pre-deployment intelligence system for Kubernetes.
+Kostral is a pipeline-based pre-deployment intelligence system for Kubernetes.
 
 It analyzes, optimizes, validates, and secures Kubernetes resources before they are passed to the final output or optional execution stage.
 
@@ -47,7 +47,7 @@ It is not a separate engine or implementation component.
 
 # 🧱 2. Intermediate Representation
 
-KOSTRAL converts supported Kubernetes resources into a shared Intermediate Representation (IR).
+Kostral converts supported Kubernetes resources into a shared Intermediate Representation (IR).
 
 The IR provides a common structure between input handling and rule processing.
 
@@ -64,7 +64,7 @@ Kubernetes Manifest
      Engines
 ```
 
-The IR helps KOSTRAL:
+The IR helps Kostral:
 
 - normalize resources
 - separate parsing from rule logic
@@ -90,7 +90,7 @@ PersistentVolumeClaimIR
 
 # 🔌 3. Independent Engines
 
-KOSTRAL is composed of independent engines operating on the shared IR.
+Kostral is composed of independent engines operating on the shared IR.
 
 The engines are intended to be:
 
@@ -105,7 +105,7 @@ The engines are intended to be:
 
 > An engine should be usable as a distinct module within a workflow without requiring another engine to understand its internal implementation.
 
-It does **not** imply that KOSTRAL currently provides a dynamic plugin-loading framework.
+It does **not** imply that Kostral currently provides a dynamic plugin-loading framework.
 
 ---
 
@@ -327,7 +327,7 @@ The architectural term should remain **Cloud Engine**.
 
 # 🔒 11. Documented Engine Boundaries
 
-KOSTRAL currently follows these boundaries:
+Kostral currently follows these boundaries:
 
 | Engine | Responsibility | Current IR behavior |
 |---|---|---|
@@ -457,12 +457,12 @@ This is workflow behavior, not implementation coupling.
 
 # 📊 15. Reporting and Output
 
-KOSTRAL separates engine processing from output representation.
+Kostral separates engine processing from output representation.
 
 Conceptually:
 
 ```text
-                    KOSTRAL RESULT
+                    Kostral RESULT
                         │
           ┌─────────────┼─────────────┐
           │             │             │
@@ -500,7 +500,7 @@ Documented boundary
 Runtime authority system
 ```
 
-KOSTRAL currently relies on implementation structure, rule design, tests, and contributor discipline to maintain these boundaries.
+Kostral currently relies on implementation structure, rule design, tests, and contributor discipline to maintain these boundaries.
 
 ---
 
@@ -628,7 +628,7 @@ This remains a future architecture concept until implemented.
 
 # 🎯 21. Architecture in Four Rules
 
-The KOSTRAL architecture can be remembered through four simple ideas:
+The Kostral architecture can be remembered through four simple ideas:
 
 ```text
 1. Engines are independent modules.
@@ -671,7 +671,7 @@ OUTPUT
 
 # 🌐 22. Remote Engine Composition
 
-KOSTRAL includes a remote adapter implementation that allows an engine
+Kostral includes a remote adapter implementation that allows an engine
 running in a separate process to be invoked through HTTP.
 
 This introduces another way to compose existing engines into a workflow.

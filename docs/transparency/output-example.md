@@ -258,13 +258,13 @@ KOSTRAL automatically:
 
 ## 🎯 Why This Matters
 
-Without TRL:
+Without KOSTRAL:
 
 * Issues reach production
 * Costs increase due to over/under provisioning
 * Security risks remain unnoticed
 
-With TRL:
+With KOSTRAL:
 
 * Problems are caught early
 * Infrastructure is optimized
