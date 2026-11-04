@@ -8,6 +8,19 @@ The easiest way to contribute is to add or improve a **rule**.
 
 However, contributions are not limited to rules. Bug fixes, tests, documentation, CLI improvements, and other improvements are welcome as well.
 
+## The Golden Rule
+⚠️ **ALL Pull Requests must target the `stagingV2` branch.** Do NOT open a Pull Request against `staging` or `main`. PRs targeting the wrong branch will be automatically closed.
+
+## Contribution Workflow
+1. **Fork** this repository to your own GitHub account.
+2. **Clone** your fork locally to your computer.
+3. Create a descriptive feature branch: `git checkout -b feature/your-feature-name`
+4. Commit your changes and **push** them to your fork.
+5. Open a **Pull Request** on GitHub, and ensure the base branch dropdown is set to `stagingV2`.
+
+## What Happens Next?
+The maintainer will review your code in `stagingV2`. Once accepted, your changes will cycle through our `staging` environment for final pre-release validation before being deployed to `main`.
+
 ---
 
 # 🧭 1. Understand Kostral First
