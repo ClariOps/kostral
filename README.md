@@ -1,14 +1,9 @@
 
 <p align="center">
-  <img
-    src="docs/assets/kostral-logo.svg"
-    alt="Kostral"
-    height="36"
-    style="vertical-align: middle;"
-  />
-  <span style="vertical-align: middle;">
-    &nbsp; — &nbsp; pre-deployment decision system for Kubernetes 
-  </span>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/kostral-banner-dark.svg">
+    <img src="docs/assets/kostral-banner.svg" alt="Kostral — pre-deployment intelligence for Kubernetes" width="800">
+  </picture>
 </p>
 
 > Analyze • Optimize • Secure • Validate — before it hits your cluster
