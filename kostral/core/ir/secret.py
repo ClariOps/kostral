@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional,Any
 from kostral.core.base import IR
 import base64
+from copy import deepcopy
 
 class SecretIR(IR):
     kind = "SecretIR"
@@ -30,6 +31,7 @@ class SecretIR(IR):
         return f"SecretIR(name={self.name}, type={self.secret_type}, keys={list(self.data.keys())})"
 
     def _from_manifest(self, m: dict):
+        self._source = deepcopy(m)
         self.name = m["metadata"]["name"]
         self.secret_type = m.get("type", "Opaque")
         
@@ -41,8 +43,22 @@ class SecretIR(IR):
             k: base64.b64decode(v).decode()
             for k, v in m.get("data", {}).items()
             }
-            
+            self._loaded = deepcopy({
+                "name": self.name,
+                "type": self.secret_type,
+                "data": self.data,
+            })
     def to_manifest(self) -> dict:
+        if (
+            getattr(self, "_source", None) is not None
+            and {
+                "name": self.name,
+                "type": self.secret_type,
+                "data": self.data,
+            } == self._loaded
+        ):
+            return deepcopy(self._source)
+        
         encoded_data = {
             k: base64.b64encode(v.encode()).decode()
             for k, v in self.data.items()

@@ -76,8 +76,24 @@ def load_yaml_irs(user_path, logger):
                     logger.warning(
                         f"No IR class defined for kind '{kind}' in {filepath}"
                     )
-
     return irs
+
+EXIT_OK = 0
+EXIT_FINDINGS = 1
+EXIT_USAGE = 2
+EXIT_CRASH = 3
+
+def exit_code_for(ctx):
+    """Determine process exit code from the completed RunContext."""
+
+    if ctx.report.has_errors():
+        return EXIT_FINDINGS
+
+    if ctx.artifacts.get("deploy_error"):
+        return EXIT_FINDINGS
+
+    return EXIT_OK
+
 
 def build_opts(args):
     opts = {}
@@ -123,6 +139,12 @@ Analyze • Optimize • Validate • Secure
 
 
 def valid_file(path):
+    if path == "-":
+        return path
+
     if not os.path.exists(path):
-        raise argparse.ArgumentTypeError(f"File not found: {path}")
+        raise argparse.ArgumentTypeError(
+            f"File not found: {path}"
+        )
+
     return path

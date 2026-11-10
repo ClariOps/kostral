@@ -45,6 +45,7 @@ Unlike traditional tools that focus only on linting or validation:
 - Focuses on pre-deployment intelligence, not post-failure debugging
 - Designed for clarity and fast feedback, not complex pipelines
 
+
 ## ⚖️ Comparison
 
 | Tool        | Validation | Security | Optimization | Dedicated AutoFix Engine |
@@ -62,10 +63,6 @@ Kubernetes is powerful — but:
 * ❌ Missing probes → unreliable deployments
 * ❌ Security misconfigurations → critical risks
 * ❌ Exposure misconfigurations → attack surface
-
-Most tools detect problems **after deployment**.
-
-👉 By then, it's already too late.
 
 ---
 
@@ -496,6 +493,12 @@ docs/architecture.md
 ---
 
 ## ⚠️ Current Status
+
+| Modules | Status 
+| :--- | :--- | 
+| `CLI` | ✅ Stable | 
+
+
 
 * CLI: ✅ Stable
 * Engines: ✅ Functional

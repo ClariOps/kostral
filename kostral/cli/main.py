@@ -1,4 +1,4 @@
-import argparse, yaml, logging, glob, os
+import argparse, yaml, logging, glob, os, contextlib
 import sys
 from importlib.metadata import version, PackageNotFoundError
 
@@ -20,12 +20,26 @@ from kostral.core.reporting.yamlRenderer import YamlRenderer
 
 from kostral.core.reporting.deprecatedRenderer import render_report
 from kostral.core.logconfig.config import setup_logging
-from kostral.cli.helper import IR_MAPPING, load_workflow, load_yaml_irs, build_opts, render_banner, valid_file
+from kostral.cli.helper import IR_MAPPING, load_workflow, load_yaml_irs, build_opts, render_banner, valid_file, exit_code_for, EXIT_CRASH
+
 
 
 
 
 def main():
+    """Entry point. Exit codes: 0 ok, 1 findings, 2 usage, 3 internal failure."""
+
+    try:
+        _main()
+    except (SystemExit, KeyboardInterrupt):
+        raise
+    except BaseException:
+        import traceback
+        traceback.print_exc()
+        sys.exit(EXIT_CRASH)
+
+
+def _main():    
     p = argparse.ArgumentParser("koss")
     sub = p.add_subparsers(dest="cmd", required=True)
     
@@ -130,7 +144,8 @@ def main():
         bus.run(ctx)
         logger.info(f"after run context is: {ctx.__dict__}")
         #legacy report modules 
-        render_report(ctx.report, args.verbose)    
+        render_report(ctx.report, args.verbose)
+        sys.exit(exit_code_for(ctx))    
     
     # DSL based
     # on hold currently
@@ -156,6 +171,7 @@ def main():
         logger.info(f"After run context is: {ctx.__dict__}")
         #legacy report module
         render_report(ctx.report, args.verbose)
+        sys.exit(exit_code_for(ctx))
 
     # analysis CLI
     elif args.cmd == "explain":
@@ -194,13 +210,15 @@ def main():
             print(output, end="")
             if args.verbose:
                 report = ReportsRenderer(ctx.report, verbose=True)
-                print(report.render(), file=sys.stderr)    
+                with contextlib.redirect_stdout(sys.stderr):
+                    report.render() 
 
         else:
             renderer = ReportsRenderer(ctx.report, verbose=args.verbose) 
         
     
         renderer.render()
+        sys.exit(exit_code_for(ctx))  
 
     elif args.cmd == "optimize":
         
@@ -234,12 +252,14 @@ def main():
             print(output, end="")
             if args.verbose:
                 report = ReportsRenderer(ctx.report, verbose=True)
-                print(report.render(), file=sys.stderr)    
+                with contextlib.redirect_stdout(sys.stderr):
+                    report.render()
 
         else:
             renderer = ReportsRenderer(ctx.report, verbose=args.verbose) 
         
         renderer.render()
+        sys.exit(exit_code_for(ctx))
 
     elif args.cmd == "remote":
 
@@ -274,6 +294,7 @@ def main():
             renderer = ReportsRenderer(ctx.report, verbose=args.verbose)
 
         renderer.render() 
+        sys.exit(exit_code_for(ctx))
 
 if __name__ == "__main__":
     main()

@@ -37,3 +37,4 @@ class PrivilegedContainerRule(SecurityRule):
                     impact=f"Full host access (critical risk)",
                     fix=f"Remove privileged: true"
                 )
+                

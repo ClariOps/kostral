@@ -65,7 +65,7 @@ class DeploymentIR(IR):
 
         # Preserve complete container definitions, including securityContext,
         # env, probes, volumeMounts, and other fields not modeled by the IR.
-        self.containers = pod_spec.get("containers", [])
+        self.containers = deepcopy(pod_spec.get("containers", []))
 
         container = self.containers[0] if self.containers else {}
         resources = container.get("resources", {})
@@ -85,12 +85,19 @@ class DeploymentIR(IR):
 
         self.resources["requests"] = deepcopy(resources.get("requests", {}))
         self.resources["limits"] = deepcopy(resources.get("limits", {}))
-
+        self._loaded = {
+            "name": self.name,
+            "labels": deepcopy(self.labels),
+            "replicas": self.replicas,
+            "image": self.image,
+            "ports": list(self.ports),
+        }
             
     def to_manifest(self) -> Dict[str, Any]:
         if hasattr(self, "manifest"):
             # Start with the complete original manifest.
             manifest = deepcopy(self.manifest)
+            loaded = self._loaded
 
             metadata = manifest.setdefault("metadata", {})
             spec = manifest.setdefault("spec", {})
@@ -98,17 +105,20 @@ class DeploymentIR(IR):
             template_metadata = template.setdefault("metadata", {})
             pod_spec = template.setdefault("spec", {})
 
-            metadata["name"] = self.name
+            if self.name != loaded["name"]:
+                metadata["name"] = self.name
 
-            if self.labels is not None:
+            # Labels: only propagate an explicit label change.
+# Do not rewrite the immutable spec.selector.
+            if self.labels != loaded["labels"] and self.labels is not None:
                 metadata["labels"] = deepcopy(self.labels)
-                template_metadata["labels"] = deepcopy(self.labels)
-                spec.setdefault("selector", {})["matchLabels"] = deepcopy(
-                    self.labels
-                )
+                template.setdefault("metadata", {})["labels"] = deepcopy(self.labels)
 
             # Reflect current IR state, including optimizer changes.
-            if self.replicas is not None:
+            if (
+                self.replicas is not None
+                and self.replicas != loaded["replicas"]
+            ):
                 spec["replicas"] = self.replicas
 
             containers = deepcopy(self.containers)
@@ -116,18 +126,22 @@ class DeploymentIR(IR):
             if containers:
                 container = containers[0]
 
-                if self.name is not None:
-                    container["name"] = self.name
+                
 
-                if self.image is not None:
+               # Deployment name and container name are different identifiers.
+                if self.image != loaded["image"] and self.image is not None:
                     container["image"] = self.image
+                
+                if self.ports != loaded["ports"]:
+                    old = {
+                        p.get("containerPort"): p
+                        for p in container.get("ports", [])
+                    }
 
-                if self.ports:
                     container["ports"] = [
-                        {"containerPort": port}
+                        old.get(port, {"containerPort": port})
                         for port in self.ports
                     ]
-
                 # Update modeled resources while preserving unrelated resource
                 # keys and the rest of the container configuration.
                 resources = deepcopy(container.get("resources", {}))

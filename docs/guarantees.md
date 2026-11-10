@@ -63,7 +63,7 @@ If a future engine requires mutation, its responsibility and mutation behavior s
 
 * **Optimizer Engine**:
 
-  * Responsible for improvements and safe defaults
+  * Responsible for improvements 
 
 👉 Detection and action are intentionally separated to ensure clarity and control
 
