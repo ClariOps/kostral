@@ -12,8 +12,8 @@ from kostral.modules.security.engine import SecurityEngine
 from kostral.modules.cloud.engine import CloudEngine
 from kostral.modules.validator.engine import ValidatorEngine
 from kostral.modules.renderer.engine import RendererEngine
-from kostral.adapters.remote import HTTPModuleClient
-from kostral.core.bus import ServiceBus
+
+from kostral.core.bus import ServiceBus, EngineContractViolation
 from kostral.core.reporting.reportRenderer import ReportsRenderer
 from kostral.core.reporting.jsonRenderer import JSONRenderer
 from kostral.core.reporting.yamlRenderer import YamlRenderer
@@ -33,6 +33,9 @@ def main():
         _main()
     except (SystemExit, KeyboardInterrupt):
         raise
+    except EngineContractViolation as exc:
+        print(f"koss: engine contract violation: {exc}", file=sys.stderr)
+        sys.exit(EXIT_CRASH)
     except BaseException:
         import traceback
         traceback.print_exc()

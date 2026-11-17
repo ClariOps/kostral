@@ -33,9 +33,9 @@ def _create_handler(engine):
                 ctx = RunContext(
                     irs=ctx_irs,
                     opts=data.get("opts", {}),
-                    report=Report.from_dict(data.get("report", {}))
+                    report=Report()
                 )
-                print(ctx.__dict__)
+
                 engine.process(ctx)
 
                 response = {
@@ -46,7 +46,10 @@ def _create_handler(engine):
                         }
                         for ir in ctx.irs
                     ],
-                    "report": ctx.report.to_dict(),
+                    "findings": [
+                        event.to_dict()
+                        for event in ctx.report.events
+                    ],
                 }
 
                 encoded = json.dumps(

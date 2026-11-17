@@ -59,7 +59,7 @@ def load_yaml_irs(user_path, logger):
     else:
         search_pattern = user_path
 
-    for filepath in glob.glob(search_pattern):
+    for filepath in sorted(glob.glob(search_pattern)):
         with open(filepath, "r") as f:
             documents = yaml.safe_load_all(f)
 

@@ -1,13 +1,13 @@
 # KOSTRAL test report
 
-Generated 2026-11-10 18:46 by `tests/report.py`. Do not edit by hand.
+Generated 2026-11-17 15:36 by `tests/report.py`. Do not edit by hand.
 
 ## Summary
 
 | Outcome | Count |
 | --- | --- |
-| passed | 123 |
-| total | 123 |
+| passed | 147 |
+| total | 147 |
 
 ## Example files by use case
 
@@ -22,6 +22,30 @@ Generated 2026-11-10 18:46 by `tests/report.py`. Do not edit by hand.
 
 | Test | Guarantee or purpose |
 | --- | --- |
+| `test_contract.test_a_typo_in_metadata_is_an_error_not_silently_ignored` | test a typo in metadata is an error not silently ignored |
+| `test_contract.test_bus_rejects_an_engine_with_unknown_metadata` | test bus rejects an engine with unknown metadata |
+| `test_contract.test_checks_phase_refuses_a_mutating_engine` | test checks phase refuses a mutating engine |
+| `test_contract.test_engine_cannot_delete_earlier_findings` | test engine cannot delete earlier findings |
+| `test_contract.test_engine_cannot_edit_its_metadata_in_place` | test engine cannot edit its metadata in place |
+| `test_contract.test_engine_cannot_grant_itself_mutation_during_a_run` | test engine cannot grant itself mutation during a run |
+| `test_contract.test_engine_metadata_is_per_instance` | test engine metadata is per instance |
+| `test_contract.test_engine_that_changes_manifests_without_declaring_it_is_rejected` | test engine that changes manifests without declaring it is rejected |
+| `test_contract.test_mutating_engine_must_report_what_it_changed` | test mutating engine must report what it changed |
+| `test_contract.test_mutating_engine_that_reports_is_accepted` | test mutating engine that reports is accepted |
+| `test_contract.test_parallel_checks_run_in_list_order` | test parallel checks run in list order |
+| `test_contract.test_workflow_can_grant_mutation_to_a_local_engine` | test workflow can grant mutation to a local engine |
+| `test_contract.test_workflow_cannot_put_a_mutating_engine_in_parallel_checks` | test workflow cannot put a mutating engine in parallel checks |
+| `test_contract.test_directory_input_is_read_in_sorted_filename_order` | test directory input is read in sorted filename order |
+| `test_contract.test_approved_remote_mutation_is_accepted_when_reported` | test approved remote mutation is accepted when reported |
+| `test_contract.test_constructor_is_not_a_way_around_the_registry` | One obvious way: the plain constructor takes no permissions at all. |
+| `test_contract.test_malformed_finding_is_an_error` | test malformed finding is an error |
+| `test_contract.test_registry_approval_alone_does_not_make_an_engine_mutating` | test registry approval alone does not make an engine mutating |
+| `test_contract.test_registry_with_unknown_metadata_is_an_error` | test registry with unknown metadata is an error |
+| `test_contract.test_remote_engine_cannot_erase_findings` | Old behavior: an empty 'report' in the reply turned FAILED into PASSED. |
+| `test_contract.test_remote_findings_are_appended` | test remote findings are appended |
+| `test_contract.test_remote_mutation_needs_workflow_request_and_registry_approval` | test remote mutation needs workflow request and registry approval |
+| `test_contract.test_remote_that_changes_manifests_without_permission_is_rejected` | test remote that changes manifests without permission is rejected |
+| `test_contract.test_reply_without_findings_is_an_error_not_an_empty_result` | test reply without findings is an error not an empty result |
 | `test_guarantees.test_directory_input_does_not_depend_on_file_order` | A folder of manifests must give identical output however the files were created. |
 | `test_guarantees.test_same_output_twice_from_different_directories` | same manifest, same output, from any working directory. |
 | `test_guarantees.test_exit_code_does_not_depend_on_dry_run_or_output_format` | same input, same decision, whatever the flags or renderer. |

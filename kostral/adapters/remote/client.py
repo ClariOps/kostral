@@ -10,7 +10,7 @@ from kostral.core.ir import (
     SecretIR,
     PVCIR,
 )
-
+from kostral.core.contract import DEFAULT_METADATA
 
 IR_MAPPING = {
     "DeploymentIR": DeploymentIR,
@@ -20,6 +20,10 @@ IR_MAPPING = {
     "SecretIR": SecretIR,
     "PVCIR": PVCIR,
 }
+
+
+class RemoteEngineError(Exception):
+    """The remote engine failed or answered with something malformed."""
 
 
 def _serialize_irs(irs):
@@ -53,26 +57,30 @@ def _deserialize_irs(items):
     return irs
 
 
+
 class HTTPModuleClient(RemoteModuleClient):
 
     def __init__(
         self,
         name: str,
         endpoint: str,
-        timeout: int = 30,
+        timeout: int = 30
     ):
+
         self.name = name
         self.endpoint = endpoint
         self.timeout = timeout
 
+        # A plain remote engine is read-only.
+        self.metadata = DEFAULT_METADATA
+
     def process(self, ctx: RunContext) -> None:
 
+        # Do not send the existing report to the remote engine.
         payload = {
             "irs": _serialize_irs(ctx.irs),
             "opts": ctx.opts,
-            "report": ctx.report.to_dict(),
         }
-
 
         response = requests.post(
             self.endpoint,
@@ -82,9 +90,47 @@ class HTTPModuleClient(RemoteModuleClient):
 
         response.raise_for_status()
 
-        data = response.json()
-    
-        ctx.irs = _deserialize_irs(
-            data["irs"]
-        )
-        ctx.report = Report.from_dict(data.get("report", {}))
+        try:
+            data = response.json()
+
+        except ValueError as exc:
+
+            raise RemoteEngineError(
+                f"{self.name}: response is not JSON"
+            ) from exc
+
+        # Response must have the expected structure.
+        if (
+            not isinstance(data, dict)
+            or not isinstance(data.get("irs"), list)
+            or not isinstance(data.get("findings"), list)
+        ):
+
+            raise RemoteEngineError(
+                f"{self.name}: response must contain "
+                f"'irs' and 'findings' lists"
+            )
+
+        try:
+
+            new_irs = _deserialize_irs(
+                data["irs"]
+            )
+
+            # Append findings; never replace the report.
+            ctx.report.extend(
+                data["findings"]
+            )
+
+        except (
+            KeyError,
+            ValueError,
+            TypeError
+        ) as exc:
+
+            raise RemoteEngineError(
+                f"{self.name}: malformed response: {exc}"
+            ) from exc
+
+        # Update IR only after deserialization and finding validation.
+        ctx.irs = new_irs
