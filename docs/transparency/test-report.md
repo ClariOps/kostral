@@ -1,22 +1,29 @@
 # KOSTRAL test report
 
-Generated 2026-11-17 15:36 by `tests/report.py`. Do not edit by hand.
+Generated 2026-11-18 17:01 by `tests/report.py`. Do not edit by hand.
 
 ## Summary
 
 | Outcome | Count |
 | --- | --- |
-| passed | 147 |
-| total | 147 |
+| passed | 184 |
+| known failure | 1 |
+| total | 185 |
+
+## Known failures (code breaks a guarantee today)
+
+| Test | Guarantee | Reason |
+| --- | --- | --- |
+| `test_runner.test_adding_a_typed_document_is_not_touching_the_opaque_ones` | not tagged | KNOWN LIMITATION, DECISION NEEDED. The opaque snapshot records each document's absolute position, so a mutating engine that inserts a typed document ahead of them shifts every index and is rejected as if it had reordered them. Comparing the opaque documents as an ordered list (without the index) keeps the 'modified, removed or reordered' guarantee and avoids the false alarm. Remove the marker once you decide. |
 
 ## Example files by use case
 
 | Use case | Files | Passed | Not passed |
 | --- | --- | --- | --- |
-| degraded-json | 21 | 21 | 0 |
-| explain-json | 28 | 28 | 0 |
-| optimize-json | 28 | 28 | 0 |
-| optimize-yaml | 28 | 28 | 0 |
+| degraded-json | 22 | 22 | 0 |
+| explain-json | 29 | 29 | 0 |
+| optimize-json | 29 | 29 | 0 |
+| optimize-yaml | 29 | 29 | 0 |
 
 ## Other passing tests
 
@@ -46,6 +53,15 @@ Generated 2026-11-17 15:36 by `tests/report.py`. Do not edit by hand.
 | `test_contract.test_remote_mutation_needs_workflow_request_and_registry_approval` | test remote mutation needs workflow request and registry approval |
 | `test_contract.test_remote_that_changes_manifests_without_permission_is_rejected` | test remote that changes manifests without permission is rejected |
 | `test_contract.test_reply_without_findings_is_an_error_not_an_empty_result` | test reply without findings is an error not an empty result |
+| `test_coverage.test_a_document_without_a_name_does_not_break_the_run` | test a document without a name does not break the run |
+| `test_coverage.test_an_unmodeled_document_loads_and_renders_back_verbatim` | test an unmodeled document loads and renders back verbatim |
+| `test_coverage.test_documents_that_are_not_kubernetes_resources_are_still_skipped` | test documents that are not kubernetes resources are still skipped |
+| `test_coverage.test_unmodeled_documents_are_rendered_unchanged_and_in_order` | test unmodeled documents are rendered unchanged and in order |
+| `test_coverage.test_every_unmodeled_document_is_reported` | test every unmodeled document is reported |
+| `test_coverage.test_modeled_kinds_are_not_reported_as_unanalyzed` | test modeled kinds are not reported as unanalyzed |
+| `test_coverage.test_the_gap_is_visible_for_piped_input_too` | test the gap is visible for piped input too |
+| `test_coverage.test_the_text_report_names_the_unanalyzed_kind` | test the text report names the unanalyzed kind |
+| `test_coverage.test_unanalyzed_kind_is_a_warning_so_ci_still_passes` | test unanalyzed kind is a warning so ci still passes |
 | `test_guarantees.test_directory_input_does_not_depend_on_file_order` | A folder of manifests must give identical output however the files were created. |
 | `test_guarantees.test_same_output_twice_from_different_directories` | same manifest, same output, from any working directory. |
 | `test_guarantees.test_exit_code_does_not_depend_on_dry_run_or_output_format` | same input, same decision, whatever the flags or renderer. |
@@ -64,3 +80,27 @@ Generated 2026-11-17 15:36 by `tests/report.py`. Do not edit by hand.
 | `test_remote.test_remote_run_with_servers_down_fails_loudly` | A missing engine must be an error, never an empty report. |
 | `test_remote.test_remote_output_is_deterministic` | test remote output is deterministic |
 | `test_remote.test_remote_result_matches_local_result` | test remote result matches local result |
+| `test_runner.test_explain_and_optimize_report_each_gap_exactly_once` | test explain and optimize report each gap exactly once |
+| `test_runner.test_remote_with_a_workflow_that_has_no_validator_still_reports_the_gap` | The point of the layer: a workflow author cannot compose coverage away. |
+| `test_runner.test_stdin_goes_through_the_runner_too` | test stdin goes through the runner too |
+| `test_runner.test_the_runner_does_not_change_the_rendered_manifests` | test the runner does not change the rendered manifests |
+| `test_runner.test_it_never_changes_the_documents` | test it never changes the documents |
+| `test_runner.test_it_only_appends_to_the_report` | test it only appends to the report |
+| `test_runner.test_nothing_to_say_when_every_document_is_modeled` | test nothing to say when every document is modeled |
+| `test_runner.test_one_warning_per_unanalyzed_document_in_document_order` | test one warning per unanalyzed document in document order |
+| `test_runner.test_opaque_documents_are_flagged_and_typed_ones_are_not` | test opaque documents are flagged and typed ones are not |
+| `test_runner.test_a_full_workflow_does_not_report_the_same_gap_twice` | Catches a leftover validator rule that duplicates the system report. |
+| `test_runner.test_a_workflow_without_a_validator_still_reports_the_gap` | test a workflow without a validator still reports the gap |
+| `test_runner.test_an_empty_workflow_still_reports_the_gap` | test an empty workflow still reports the gap |
+| `test_runner.test_an_engine_cannot_erase_the_coverage_findings` | test an engine cannot erase the coverage findings |
+| `test_runner.test_skip_rules_and_allow_rules_cannot_hide_it` | DECISION encoded here: coverage is a system responsibility, so the user's rule filters (which only apply to workflow rules) do not touch it. |
+| `test_runner.test_a_mutating_engine_may_still_change_typed_documents_next_to_them` | test a mutating engine may still change typed documents next to them |
+| `test_runner.test_editing_an_opaque_document_is_rejected` | test editing an opaque document is rejected |
+| `test_runner.test_editing_is_rejected_even_when_the_engine_may_mutate_and_reports_it` | test editing is rejected even when the engine may mutate and reports it |
+| `test_runner.test_removing_an_opaque_document_is_rejected` | test removing an opaque document is rejected |
+| `test_runner.test_reordering_opaque_documents_is_rejected` | test reordering opaque documents is rejected |
+| `test_runner.test_any_object_with_run_is_a_workflow` | test any object with run is a workflow |
+| `test_runner.test_coverage_runs_before_any_workflow_engine` | test coverage runs before any workflow engine |
+| `test_runner.test_the_runner_hands_back_what_the_workflow_returns` | test the runner hands back what the workflow returns |
+| `test_runner.test_workflow_and_coverage_each_run_exactly_once` | test workflow and coverage each run exactly once |
+| `test_runner.test_workflow_errors_are_not_swallowed` | test workflow errors are not swallowed |

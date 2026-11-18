@@ -13,6 +13,7 @@ from kostral.modules.cloud.engine import CloudEngine
 from kostral.modules.validator.engine import ValidatorEngine
 from kostral.modules.renderer.engine import RendererEngine
 
+
 from kostral.core.bus import ServiceBus, EngineContractViolation
 from kostral.core.reporting.reportRenderer import ReportsRenderer
 from kostral.core.reporting.jsonRenderer import JSONRenderer
@@ -20,7 +21,7 @@ from kostral.core.reporting.yamlRenderer import YamlRenderer
 
 from kostral.core.reporting.deprecatedRenderer import render_report
 from kostral.core.logconfig.config import setup_logging
-from kostral.cli.helper import IR_MAPPING, load_workflow, load_yaml_irs, build_opts, render_banner, valid_file, exit_code_for, EXIT_CRASH
+from kostral.cli.helper import IR_MAPPING, load_workflow, load_yaml_irs, build_opts, render_banner, valid_file, exit_code_for, EXIT_CRASH, KostralRunner
 
 
 
@@ -195,14 +196,14 @@ def _main():
         # }
         
         ctx = RunContext(irs=irs, opts=opts)
-        bus = ServiceBus(seq_before=[
-                            ],
+        bus = ServiceBus(seq_before=[],
                         parallel_checks = [
                             ValidatorEngine() ,SecurityEngine()],
                         seq_after = [RendererEngine()]
                         )
               
-        bus.run(ctx)
+        krunner = KostralRunner(bus)
+        krunner.run(ctx)
         if args.output == "json":
             renderer = JSONRenderer(ctx.report)
             output = renderer.render()
@@ -244,7 +245,8 @@ def _main():
                             [ValidatorEngine() ,SecurityEngine()],
                         seq_after = [RendererEngine(), CloudEngine()]
                         )
-        bus.run(ctx)
+        krunner = KostralRunner(bus)
+        krunner.run(ctx)
         if args.output == "json":
             renderer = JSONRenderer(ctx.report)
             output = renderer.render()
@@ -280,10 +282,12 @@ def _main():
         workflow = load_workflow(args.workflow)
         
         bus = ServiceBus(
+            
             **workflow.workflow
         )
         
-        bus.run(ctx)
+        krunner = KostralRunner(bus)
+        krunner.run(ctx)
         
         if args.output == "json":
             renderer = JSONRenderer(ctx.report)

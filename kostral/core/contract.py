@@ -50,6 +50,14 @@ def snapshot(ctx):
             sort_keys=True,
             default=str
         ),
+        "opaque_docs": json.dumps(
+            [
+                {"index": i, "manifest": ir.to_manifest()}
+                for i, ir in enumerate(ctx.irs)
+                if getattr(ir, "is_opaque", False)
+            ],
+            sort_keys=True, default=str
+        ),
         "findings": [
             event.to_dict()
             for event in ctx.report.events
@@ -59,7 +67,13 @@ def snapshot(ctx):
 
 def verify(engine_name, mutates, before, after):
     """Raise EngineContractViolation if the engine broke its contract."""
-
+    
+    if after["opaque_docs"] != before["opaque_docs"]:
+        raise EngineContractViolation(
+            f"engine '{engine_name}' modified, removed, or reordered "
+            f"an opaque resource"
+        )
+    
     previous_count = len(before["findings"])
 
     # Existing findings must remain unchanged.
