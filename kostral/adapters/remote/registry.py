@@ -1,5 +1,5 @@
 
-from kostral.core.contract import check_metadata
+from kostral.core.contract import check_metadata, check_pins
 
 from .client import HTTPModuleClient
 
@@ -20,6 +20,14 @@ def from_registry(
 
     Both must agree.
     """
+    
+    """
+    entry["descriptor"] pins the engine's version and input kinds. The client checks them against /describe before it sends anything.
+     """
+    
+    unknown = set(entry) - {"name", "endpoint", "metadata", "descriptor"}
+    if unknown:
+        raise ValueError(f"registry entry '{entry.get('name')}': unknown keys {sorted(unknown)}")
 
     client = HTTPModuleClient(
         entry["name"],
@@ -27,6 +35,8 @@ def from_registry(
         timeout
     )
 
+    client.pins = check_pins(entry.get("descriptor"), f"registry entry '{client.name}'")
+    
     approved = check_metadata(
         entry.get("metadata", {}),
         f"registry entry '{client.name}'"

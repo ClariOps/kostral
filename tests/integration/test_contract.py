@@ -26,6 +26,8 @@ from kostral.modules.optimizer.engine import OptimizerEngine
 from kostral.modules.security.engine import SecurityEngine
 from kostral.modules.validator.engine import ValidatorEngine
 
+from .fakes import _serve, descriptor, pinned_entry
+
 from .helpers import ROOT
 
 logging.disable(logging.CRITICAL)
@@ -57,6 +59,7 @@ class DeletesFindings(Module):
 
     def process(self, ctx):
         ctx.report.events.clear()
+
 
 
 class BusEnforcementTests(unittest.TestCase):
@@ -140,25 +143,6 @@ class BusEnforcementTests(unittest.TestCase):
         self.assertEqual(order, ["a", "b", "c"])
 
 
-def _serve(responder):
-    class H(BaseHTTPRequestHandler):
-        def do_POST(self):
-            body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
-            code, out = responder(body)
-            raw = json.dumps(out).encode()
-            self.send_response(code)
-            self.send_header("Content-Length", str(len(raw)))
-            self.end_headers()
-            self.wfile.write(raw)
-
-        def log_message(self, *a):
-            pass
-
-    server = HTTPServer(("127.0.0.1", 0), H)
-    threading.Thread(target=server.serve_forever, daemon=True).start()
-    return server, f"http://127.0.0.1:{server.server_port}/process"
-
-
 class RemoteClientTests(unittest.TestCase):
     def run_remote(self, responder):
         server, url = _serve(responder)
@@ -196,12 +180,10 @@ class RemoteClientTests(unittest.TestCase):
         url = "http://127.0.0.1:1/process"
         ask = {"mutates": True}
         with self.assertRaisesRegex(ValueError, "not approved"):
-            from_registry({"name": "r", "endpoint": url}, metadata=ask)
+            from_registry(pinned_entry(url), metadata=ask)
         with self.assertRaisesRegex(ValueError, "not approved"):
-            from_registry(
-                {"name": "r", "endpoint": url, "metadata": {"mutates": False}}, metadata=ask)
-        ok = from_registry(
-            {"name": "r", "endpoint": url, "metadata": {"mutates": True}}, metadata=ask)
+            from_registry(pinned_entry(url, mutates=False), metadata=ask)
+        ok = from_registry(pinned_entry(url, mutates=True), metadata=ask)
         self.assertTrue(ok.metadata["mutates"])
 
     def test_constructor_is_not_a_way_around_the_registry(self):
@@ -212,12 +194,10 @@ class RemoteClientTests(unittest.TestCase):
 
     def test_registry_with_unknown_metadata_is_an_error(self):
         with self.assertRaisesRegex(ValueError, "unknown metadata"):
-            from_registry(
-                {"name": "r", "endpoint": "http://x/p", "metadata": {"mutate": True}})
+             from_registry({**pinned_entry("http://x/p"), "metadata": {"mutate": True}})
 
     def test_registry_approval_alone_does_not_make_an_engine_mutating(self):
-        client = from_registry(
-            {"name": "r", "endpoint": "http://127.0.0.1:1/process", "metadata": {"mutates": True}})
+        client = from_registry(pinned_entry("http://127.0.0.1:1/process", mutates=True))
         self.assertFalse(client.metadata["mutates"])
 
     def test_approved_remote_mutation_is_accepted_when_reported(self):
@@ -229,10 +209,9 @@ class RemoteClientTests(unittest.TestCase):
                        "message": "changed replicas", "severity": "low", "category": "generic"}
             return 200, {"irs": body["irs"], "findings": [finding]}
 
-        server, url = _serve(edit)
+        server, url = _serve(edit, declared=descriptor(mutates=True))
         self.addCleanup(server.shutdown)
-        client = from_registry(
-            {"name": "r", "endpoint": url, "metadata": {"mutates": True}}, metadata={"mutates": True})
+        client = from_registry(pinned_entry(url, mutates=True), metadata={"mutates": True})
         ServiceBus([client], parallel_checks=[], seq_after=[]).run(make_ctx())
 
     def test_remote_that_changes_manifests_without_permission_is_rejected(self):
@@ -252,6 +231,9 @@ class LoaderOrderTests(unittest.TestCase):
                     f.write(f"apiVersion: v1\nkind: ConfigMap\nmetadata: {{name: {name}}}\ndata: {{k: v}}\n")
             names = [ir.name for ir in load_yaml_irs(d, logging.getLogger())]
         self.assertEqual(names, ["a", "b", "c"])
+
+
+
 
 
 if __name__ == "__main__":

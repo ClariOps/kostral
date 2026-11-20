@@ -2,11 +2,37 @@ import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from kostral.core.base import Report
 from kostral.adapters.remote.client import _deserialize_irs
+from kostral.core.contract import CONTRACT_VERSION, check_descriptor, check_metadata
 
 
-def _create_handler(engine):
+def describe(engine, version, input_kinds):
+    """What this server tells a client about itself (GET /describe)."""
+    return check_descriptor({
+        "name": engine.name,
+        "version": version,
+        "contract_version": CONTRACT_VERSION,
+        "mutates": check_metadata(getattr(engine, "metadata", {}), engine.name)["mutates"],
+        "input_kinds": list(input_kinds),
+    }, engine.name)
+        
 
+
+def _create_handler(engine, descriptor):
     class EngineHandler(BaseHTTPRequestHandler):
+
+        def do_GET(self):
+
+            if self.path != "/describe":
+                self.send_error(404)
+                return
+
+            encoded = json.dumps(descriptor).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(encoded)))
+            self.end_headers()
+            self.wfile.write(encoded)
+
 
         def do_POST(self):
 
@@ -100,13 +126,16 @@ def _create_handler(engine):
 
 def serve(
     engine,
+    *,
+    version,
+    input_kinds,
     host="127.0.0.1",
     port=9000,
 ):
 
     server = HTTPServer(
         (host, port),
-        _create_handler(engine),
+        _create_handler(engine, describe(engine, version, input_kinds)),
     )
 
     print(

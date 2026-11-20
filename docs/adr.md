@@ -1,47 +1,130 @@
 
-# A. OpaqueIR
+Date: 2026-11-18
 
-Date: 2026-11-12
+## ADR1. OpaqueIR-unknownKind-undetected
 
-## Status
 
-Proposed 
+### Status
 
-## Context
+Completed
+
+### Context
 
 Unmodeled kinds pass silently and vanish from the output. it also carries the raw documents to third-party scanners like Trivy 
 
-## Decision
+### Decision
 
-add an OpaqueIR that holds the raw document verbatim, round-trips unchanged, and emits a warning naming the kinds no engine analyzed.
+introduce an OpaqueIR that holds the raw document verbatim, round-trips unchanged, and emits a warning naming the kinds no engine analyzed.
 
-## Consequences
-
-to be added later
+### Consequences/Findings
 
 
-# B: 1. Pipeline Shape
+## ADR2. Kostral-system-runner-layer
+
+### Status
+
+Completed
+
+### Context
+
+when add OpaqueIR, for architectural prospect, we need to decide whether initialize 
+    1. the new engine
+    2. Coupled it in LoadYamlIRS and force feed the error
+
+### Decision
+
+we have decided to Opt option 1 due to
+    Coupling, antipattern and void Guarantees of explicit declaration
+
+but it comes with the issue, whether we opt for implicit declaration but it again void the guarantees so have decided to 
+
+    Add another layer of system level responsibilities KostralRunner, and segregate it from user-defined workflows  
+
+### Consequences/Findings
+
+Preserves explicit declaration rules within user workflows while ensuring system-level guarantees (like OpaqueIR fallback handling) always execute reliably.
+
+
+## ADR3. remote-mutation-workflow
+
+### Status
+Completed
+
+### Context
+for mutation of remote engine, there must be initial authorization
+
+### Decision
+
+For allow the engine mutation, these pattern must follow
+    1. Registry  will explicitly declared the engine to mutate
+    2. workflow will request to allow mutation
+    3. http request check for both to be true, to approved mutations
+
+### Consequences
+
+Engine mutates with cross check authorization, /describe will be initiated later
+
+## ADR4. local-mutation-workflow
+
+### Status
+Completed
+
+### Context
+for mutation of local engine, 
+
+### Decision
+
+For allow the engine mutation, these pattern must follow
+    1. Default MappingProxyType for mutates defined to false, with mutating engine to true
+    2. for allow mutation, with_metadata() to overrides the mutation
+    3. In bus avoid parallel check as it is readonly to get errors
+### Consequences
+
+Engine mutates with cross check authorization, 
+
+
+# ADR5. Engine Descriptor
 
 ## Status
+
+Completed
+## Context
+
+For Remote third party Engine to communicate. There must be Contract/Authentication, Authorization(mutation) and Input/Output kinds 
+
+## Decision
+
+1. Put a frozen EngineDescriptor (name, version, contract_version, mutates, input kinds, output kinds) on the engine class.
+2. For remote engines, serve it at GET /describe and have the client fetch it at startup.
+3. The pinned expectation lives in your registry, and the bus fails closed on any mismatch.
+
+
+## Consequences
+    
+Basic client/server authentication cross check verified
+
+## ADR6. Pipeline Shape
+
+### Status
 
 Proposed 
 
-## Context
+### Context
 
 For Remote Third Party Engines, The Output response will be different. 
 
-## Decision
+### Decision
 
 One field per tool is how the contract fragments. Adapters should map each tool’s findings into ReportEvents, and keep the raw tool output under ctx.artifacts["trivy"], namespaced per engine.
 
-## Consequences
+### Consequences
 
 to be added later
 
 
-# 2. Unit of exchange
+## ADR7. Unit of exchange
 
-## Status
+### Status
 
 Proposed 
 
@@ -59,77 +142,54 @@ IR plus artifacts isn’t enough. It works for Kostral’s own engines. A third-
 
 to be added later
 
-# 3. Engine Descriptor
+
+# ADR8. Mutation Enforcement
 
 ## Status
 
-Proposed 
+Completed
 
 ## Context
 
-For Remote third party Engine to communicate. There must be Contract/Authentication, Authorization(mutation) and Input/Output kinds 
+rogue engine still mutating engines without any authority so need authorization to get guarantees intact.
 
 ## Decision
 
-1. Put a frozen EngineDescriptor (name, version, contract_version, mutates, input kinds, output kinds) on the engine class.
-2. For remote engines, serve it at GET /describe and have the client fetch it at startup.
-3. The pinned expectation lives in your registry, and the bus fails closed on any mismatch.
-4. ctx can carry a read-only ctx.trace of what ran, with versions and before/after hashes. That is useful provenance, not authority.
-
-
-## Consequences
-
-to be added later
-
-# 4. Mutation Enforcement
-
-## Status
-
-Proposed 
-
-## Context
-
-rogue engine still mutating engines wihtout any authority so need authorization to get guarantees intact.
-
-## Decision
-
-The bus snapshots before and after each engine and compares canonical JSON.
+For Remote , workflow request and registry must approved for mutation, The bus should read and freeze the metadata once before the run starts . The bus snapshots before and after each engine and compares canonical JSON from contract
 
 1. A non-mutating engine must leave the documents unchanged, and the report events must only grow (earlier events unchanged).
 2. A mutating engine that changes anything must add at least one optimization event. That makes “optimizer changes are always reported” testable.
-3. For in-process Python this is detection, not prevention, so the guarantee should say “detected and rejected”.
-
-
 
 ## Consequences
 
-to be added later
+Rogue engine voilates contract, get errors 
 
-# 4. Parallel Engines
+# ADR9. Parallel Engines
 
 ## Status
 
-Proposed 
+Completed 
 
 ## Context
 
-Parallel_checks sequentially in a fixed order and say so. Today it is not parallel anyway (two 0.2s engines took 0.40s).
+Parallel_checks sequentially in a fixed order and say so.
 
 ## Decision
 
-1. sequential, fixed order
+1. sequential, fixed order with Boundaries
+2. Parallel-checks got ReadOnly engines
 2. later on run non-mutating engines concurrently, each on a read-only snapshot, and merge their findings in declared order, not completion order. Without the fixed merge order, same input → same output breaks.
 
 
 ## Consequences
 
-to be added later
+Read Only engine Falls in Parallel-check, to set boundries, and do sequential order
 
-# 5. Error model
+# ADR10. Error model
 
 ## Status
 
-Proposed 
+Completed 
 
 ## Context
 
@@ -137,17 +197,17 @@ Engine failure, timeout, malformed response, missing tools. All must be an error
 
 ## Decision
 
-Rules to adopt
+Each Error failure got segregated with
 
 1. Engine failures raise and exit with code 3, kept distinct from “the manifest failed” (exit 1). 
 2. They never become report events or ctx.errors. 
-3. The plan’s “never an empty result” is right, but CI can’t tell the two cases apart without a separate exit code.
+
 
 ## Consequences
 
-to be added later
+Each tests come with the predictable errors
 
-# 6. Remote security basics
+# ADR11. Remote security basics
 
 ## Status
 

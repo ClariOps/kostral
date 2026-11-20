@@ -1,14 +1,14 @@
 # KOSTRAL test report
 
-Generated 2026-11-18 17:01 by `tests/report.py`. Do not edit by hand.
+Generated 2026-11-20 15:40 by `tests/report.py`. Do not edit by hand.
 
 ## Summary
 
 | Outcome | Count |
 | --- | --- |
-| passed | 184 |
+| passed | 205 |
 | known failure | 1 |
-| total | 185 |
+| total | 206 |
 
 ## Known failures (code breaks a guarantee today)
 
@@ -62,6 +62,27 @@ Generated 2026-11-18 17:01 by `tests/report.py`. Do not edit by hand.
 | `test_coverage.test_the_gap_is_visible_for_piped_input_too` | test the gap is visible for piped input too |
 | `test_coverage.test_the_text_report_names_the_unanalyzed_kind` | test the text report names the unanalyzed kind |
 | `test_coverage.test_unanalyzed_kind_is_a_warning_so_ci_still_passes` | test unanalyzed kind is a warning so ci still passes |
+| `test_descriptor.test_a_valid_descriptor_is_accepted` | test a valid descriptor is accepted |
+| `test_descriptor.test_missing_and_unknown_fields_are_errors` | test missing and unknown fields are errors |
+| `test_descriptor.test_registry_pins_need_both_fields_and_nothing_else` | test registry pins need both fields and nothing else |
+| `test_descriptor.test_wrong_types_are_errors` | test wrong types are errors |
+| `test_descriptor.test_a_malformed_descriptor_is_a_remote_engine_error` | test a malformed descriptor is a remote engine error |
+| `test_descriptor.test_a_mismatch_means_no_document_is_ever_sent` | test a mismatch means no document is ever sent |
+| `test_descriptor.test_an_unreachable_descriptor_is_an_error_not_an_empty_result` | test an unreachable descriptor is an error not an empty result |
+| `test_descriptor.test_the_descriptor_is_read_before_any_document_and_only_once` | test the descriptor is read before any document and only once |
+| `test_descriptor.test_workflow_allowing_mutation_must_match_what_the_engine_declares` | test workflow allowing mutation must match what the engine declares |
+| `test_descriptor.test_a_typo_in_an_entry_is_an_error` | test a typo in an entry is an error |
+| `test_descriptor.test_an_entry_must_pin_the_version_and_kinds` | test an entry must pin the version and kinds |
+| `test_descriptor.test_every_entry_in_the_shipped_example_registry_loads` | test every entry in the shipped example registry loads |
+| `test_descriptor.test_the_pins_are_kept_on_the_client` | test the pins are kept on the client |
+| `test_descriptor.test_a_server_with_a_bad_declaration_refuses_to_start` | test a server with a bad declaration refuses to start |
+| `test_descriptor.test_describe_is_served_over_http_and_process_still_works` | test describe is served over http and process still works |
+| `test_descriptor.test_the_descriptor_is_built_from_the_engine_and_the_operators_declaration` | test the descriptor is built from the engine and the operators declaration |
+| `test_descriptor.test_there_are_no_defaults_for_version_and_kinds` | test there are no defaults for version and kinds |
+| `test_descriptor.test_a_matching_engine_passes` | test a matching engine passes |
+| `test_descriptor.test_each_mismatch_is_refused_with_its_own_reason` | test each mismatch is refused with its own reason |
+| `test_descriptor.test_the_order_of_input_kinds_does_not_matter` | test the order of input kinds does not matter |
+| `test_descriptor.test_without_pins_identity_contract_and_mutation_are_still_verified` | test without pins identity contract and mutation are still verified |
 | `test_guarantees.test_directory_input_does_not_depend_on_file_order` | A folder of manifests must give identical output however the files were created. |
 | `test_guarantees.test_same_output_twice_from_different_directories` | same manifest, same output, from any working directory. |
 | `test_guarantees.test_exit_code_does_not_depend_on_dry_run_or_output_format` | same input, same decision, whatever the flags or renderer. |

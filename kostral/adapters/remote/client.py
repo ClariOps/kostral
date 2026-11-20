@@ -1,3 +1,4 @@
+from urllib.parse import urljoin
 import requests
 
 from kostral.core.base import RemoteModuleClient, Report
@@ -9,8 +10,9 @@ from kostral.core.ir import (
     ConfigMapIR,
     SecretIR,
     PVCIR,
+    OpaqueIR
 )
-from kostral.core.contract import DEFAULT_METADATA
+from kostral.core.contract import DEFAULT_METADATA, check_descriptor, verify_descriptor
 
 IR_MAPPING = {
     "DeploymentIR": DeploymentIR,
@@ -19,6 +21,7 @@ IR_MAPPING = {
     "ConfigMapIR": ConfigMapIR,
     "SecretIR": SecretIR,
     "PVCIR": PVCIR,
+    "OpaqueIR": OpaqueIR
 }
 
 
@@ -70,12 +73,29 @@ class HTTPModuleClient(RemoteModuleClient):
         self.name = name
         self.endpoint = endpoint
         self.timeout = timeout
-
         # A plain remote engine is read-only.
         self.metadata = DEFAULT_METADATA
+        self.pins = None
+        self._verified = False
+
+    def _handshake(self):
+        """Ask the engine who it is BEFORE any document is sent."""
+        url = urljoin(self.endpoint, "describe")
+        try:
+            response = requests.get(url, timeout=self.timeout)
+            response.raise_for_status()
+            declared = check_descriptor(response.json(), self.name)
+        except (requests.RequestException, ValueError) as exc:
+            raise RemoteEngineError(f"{self.name}: cannot read the descriptor at {url}: {exc}") from exc
+
+        verify_descriptor(declared, name=self.name, pins=self.pins,
+                          mutates=self.metadata["mutates"])
+        self._verified = True
+ 
 
     def process(self, ctx: RunContext) -> None:
-
+        if not self._verified:
+            self._handshake()
         # Do not send the existing report to the remote engine.
         payload = {
             "irs": _serialize_irs(ctx.irs),
