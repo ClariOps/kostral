@@ -12,7 +12,7 @@ from kostral.core.ir import (
     PVCIR,
     OpaqueIR
 )
-from kostral.core.contract import DEFAULT_METADATA, check_descriptor, verify_descriptor
+from kostral.core.contract import DEFAULT_METADATA, check_descriptor, verify_descriptor, SECRET_KIND, kind_accepted
 
 IR_MAPPING = {
     "DeploymentIR": DeploymentIR,
@@ -23,6 +23,31 @@ IR_MAPPING = {
     "PVCIR": PVCIR,
     "OpaqueIR": OpaqueIR
 }
+
+
+def _manifest_kind(ir):
+    return ir.to_manifest().get("kind")
+
+
+def split_for_engine(irs, input_kinds):
+    """Client side only. Returns (to_send, held): `held` maps each document's
+    original position to a document that stays in this process and is never
+    serialized (a Secret, or any kind the engine did not declare)."""
+    to_send, held = [], {}
+    for position, ir in enumerate(irs):
+        if kind_accepted(input_kinds, _manifest_kind(ir)):
+            to_send.append(ir)
+        else:
+            held[position] = ir
+    return to_send, held
+
+
+def merge_back(returned, held, total):
+    """Put the returned documents into the free positions and the held ones back
+    where they were, so the list has the original order."""
+    returned = iter(returned)
+    return [held[i] if i in held else next(returned) for i in range(total)]
+
 
 
 class RemoteEngineError(Exception):
@@ -67,7 +92,7 @@ class HTTPModuleClient(RemoteModuleClient):
         self,
         name: str,
         endpoint: str,
-        timeout: int = 30
+        timeout: int = 30,
     ):
 
         self.name = name
@@ -77,6 +102,7 @@ class HTTPModuleClient(RemoteModuleClient):
         self.metadata = DEFAULT_METADATA
         self.pins = None
         self._verified = False
+        self._input_kinds = [] 
 
     def _handshake(self):
         """Ask the engine who it is BEFORE any document is sent."""
@@ -90,15 +116,28 @@ class HTTPModuleClient(RemoteModuleClient):
 
         verify_descriptor(declared, name=self.name, pins=self.pins,
                           mutates=self.metadata["mutates"])
+ 
+        # What may be sent is what the REGISTRY pinned (the handshake proved the
+        # engine declares the same). Without a registry the engine's own claim is
+        # all there is, and a server must not be able to ask for Secrets by itself.
+        if self.pins is not None:
+            self._input_kinds = list(self.pins["input_kinds"])
+        else:
+            self._input_kinds = [k for k in declared["input_kinds"] if k != SECRET_KIND]
+
         self._verified = True
  
 
     def process(self, ctx: RunContext) -> None:
         if not self._verified:
             self._handshake()
+
+        # Only what the engine declared leaves this process; the rest is held back.
+        to_send, held = split_for_engine(ctx.irs, self._input_kinds)            
         # Do not send the existing report to the remote engine.
+
         payload = {
-            "irs": _serialize_irs(ctx.irs),
+            "irs": _serialize_irs(to_send),
             "opts": ctx.opts,
         }
 
@@ -136,6 +175,7 @@ class HTTPModuleClient(RemoteModuleClient):
             new_irs = _deserialize_irs(
                 data["irs"]
             )
+            self._check_same_documents(to_send, new_irs)
 
             # Append findings; never replace the report.
             ctx.report.extend(
@@ -153,4 +193,17 @@ class HTTPModuleClient(RemoteModuleClient):
             ) from exc
 
         # Update IR only after deserialization and finding validation.
-        ctx.irs = new_irs
+        ctx.irs = merge_back(new_irs, held, len(ctx.irs))
+
+
+    @staticmethod
+    def _check_same_documents(sent, returned):
+        """An engine may change what it was given, not which documents exist:
+        same count, and the same kind in every position."""
+        if len(returned) != len(sent):
+            raise ValueError(f"{len(returned)} documents returned for {len(sent)} sent")
+        for position, (before, after) in enumerate(zip(sent, returned)):
+            if _manifest_kind(before) != _manifest_kind(after):
+                raise ValueError(
+                    f"document {position} came back as {_manifest_kind(after)}, "
+                    f"was {_manifest_kind(before)}")

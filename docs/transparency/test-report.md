@@ -1,14 +1,14 @@
 # KOSTRAL test report
 
-Generated 2026-11-20 15:40 by `tests/report.py`. Do not edit by hand.
+Generated 2026-11-20 18:48 by `tests/report.py`. Do not edit by hand.
 
 ## Summary
 
 | Outcome | Count |
 | --- | --- |
-| passed | 205 |
+| passed | 226 |
 | known failure | 1 |
-| total | 206 |
+| total | 227 |
 
 ## Known failures (code breaks a guarantee today)
 
@@ -97,8 +97,29 @@ Generated 2026-11-20 15:40 by `tests/report.py`. Do not edit by hand.
 | `test_guarantees.test_manifest_can_be_piped_through_stdin` | Helm-rendered YAML can be piped in. |
 | `test_guarantees.test_explain_yaml_returns_the_manifest_unchanged` | analysis commands do not change the manifest. |
 | `test_guarantees.test_source_files_are_never_modified` | koss never rewrites the user's files. |
+| `test_hold_back.test_a_document_that_came_back_as_another_kind` | test a document that came back as another kind |
+| `test_hold_back.test_an_extra_document_such_as_an_injected_secret` | test an extra document such as an injected secret |
+| `test_hold_back.test_documents_in_a_different_order` | test documents in a different order |
+| `test_hold_back.test_fewer_documents_than_were_sent` | test fewer documents than were sent |
+| `test_hold_back.test_a_mutating_engine_changes_its_documents_and_the_rest_stays_put` | test a mutating engine changes its documents and the rest stays put |
+| `test_hold_back.test_a_secret_is_sent_only_when_the_registry_names_it` | test a secret is sent only when the registry names it |
+| `test_hold_back.test_a_secret_never_reaches_an_engine_that_did_not_ask_for_it` | test a secret never reaches an engine that did not ask for it |
+| `test_hold_back.test_a_wildcard_engine_gets_everything_but_the_secret` | test a wildcard engine gets everything but the secret |
+| `test_hold_back.test_held_documents_come_back_in_place_and_unchanged` | test held documents come back in place and unchanged |
+| `test_hold_back.test_the_engine_receives_only_its_declared_kinds` | test the engine receives only its declared kinds |
+| `test_hold_back.test_without_a_registry_a_server_cannot_ask_for_secrets_by_itself` | test without a registry a server cannot ask for secrets by itself |
+| `test_hold_back.test_a_secret_needs_to_be_named` | test a secret needs to be named |
+| `test_hold_back.test_a_wildcard_means_everything_except_secrets` | test a wildcard means everything except secrets |
+| `test_hold_back.test_named_kinds_are_accepted` | test named kinds are accepted |
+| `test_hold_back.test_a_real_server_only_ever_sees_its_declared_kinds` | test a real server only ever sees its declared kinds |
+| `test_hold_back.test_the_server_answers_400_to_a_client_that_sends_more` | test the server answers 400 to a client that sends more |
+| `test_hold_back.test_a_wildcard_still_holds_back_the_secret` | test a wildcard still holds back the secret |
+| `test_hold_back.test_merge_restores_the_original_list` | test merge restores the original list |
+| `test_hold_back.test_nothing_declared_means_nothing_sent` | test nothing declared means nothing sent |
+| `test_hold_back.test_split_keeps_the_held_documents_with_their_positions` | test split keeps the held documents with their positions |
 | `test_matrix.test_examples_found` | test examples found |
 | `test_remote.test_remote_run_with_servers_down_fails_loudly` | A missing engine must be an error, never an empty report. |
+| `test_remote.test_a_secret_in_the_input_stays_out_of_the_engines_and_in_the_output` | The example servers declare Deployment/Service only. The Secret is held back by the client, and remote and local still render identical manifests. |
 | `test_remote.test_remote_output_is_deterministic` | test remote output is deterministic |
 | `test_remote.test_remote_result_matches_local_result` | test remote result matches local result |
 | `test_runner.test_explain_and_optimize_report_each_gap_exactly_once` | test explain and optimize report each gap exactly once |

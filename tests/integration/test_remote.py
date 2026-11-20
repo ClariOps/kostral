@@ -71,12 +71,26 @@ class RemoteRoundTripTests(unittest.TestCase):
                 self.assertEqual(remote.rc, local.rc, str(remote))
                 self.assertEqual(json.loads(remote.out), json.loads(local.out))
 
+    def test_a_secret_in_the_input_stays_out_of_the_engines_and_in_the_output(self):
+        """The example servers declare Deployment/Service only. The Secret is held
+        back by the client, and remote and local still render identical manifests."""
+        remote = koss("remote", "examples/resources", "--exec", "examples/remote/workflow.py",
+                      "--output", "yaml")
+        local = koss("optimize", "examples/resources", "--dry-run", "--output", "yaml")
+        self.assertIn(remote.rc, (0, 1), str(remote))
+        self.assertEqual(remote.out, local.out)
+        self.assertIn("kind: Secret", remote.out)
+        self.assertIn("c3VwZXJzZWNyZXQ=", remote.out)
+    
+    
     def test_remote_output_is_deterministic(self):
         a = self._remote("examples/demo/bad.yaml")
         b = self._remote("examples/demo/bad.yaml")
         self.assertEqual(a.rc, b.rc, str(a))
         self.assertIn(a.rc, (0, 1), str(a))
         self.assertEqual(a.out, b.out)
+
+
 
 
 if __name__ == "__main__":

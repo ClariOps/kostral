@@ -99,9 +99,25 @@ For Remote third party Engine to communicate. There must be Contract/Authenticat
 3. The pinned expectation lives in your registry, and the bus fails closed on any mismatch.
 
 
-## Consequences
-    
+## Consequences   
 Basic client/server authentication cross check verified
+
+
+# ADR6 Secret Hold back
+
+## Status
+
+Completed
+## Context
+held and send allowed and explicit kinds IR to the remote server
+
+
+## Decision
+Hold back IR when check for description, servers sends error, and client only got the allowed kind IR to be processed
+
+Consequences
+Got secret to be held on client end, and merge back later in the ctx
+
 
 ## ADR6. Pipeline Shape
 

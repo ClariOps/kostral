@@ -14,6 +14,10 @@ DESCRIPTOR_FIELDS = frozenset({"name", "version", "contract_version", "mutates",
 PIN_FIELDS = frozenset({"version", "input_kinds"})
 
 
+# Credentials never travel on a wildcard: a Secret goes to an engine only if the
+# engine's input_kinds name "Secret" explicitly.
+SECRET_KIND = "Secret"
+
 ALLOWED_METADATA = frozenset({"mutates"})
 
 # Shared immutable default.
@@ -120,6 +124,14 @@ def _check_kinds(kinds, who):
     if (not isinstance(kinds, list) or not kinds
             or not all(isinstance(k, str) and k for k in kinds)):
         raise ValueError(f"{who}: input_kinds must be a non-empty list of kind names")
+
+ 
+def kind_accepted(input_kinds, kind):
+    """May a document of this Kubernetes kind be sent to an engine that declares
+    these input_kinds?  "*" means every kind EXCEPT Secret."""
+    if kind in input_kinds:
+        return True
+    return "*" in input_kinds and kind != SECRET_KIND
 
 
 def check_descriptor(declared, who="engine"):
