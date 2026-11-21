@@ -10,6 +10,7 @@ import os
 import threading
 import unittest
 from http.server import HTTPServer
+from unittest import mock
 
 import requests
 
@@ -25,7 +26,7 @@ from kostral.core.contract import (CONTRACT_VERSION, check_descriptor, check_pin
 from kostral.modules.optimizer.engine import OptimizerEngine
 from kostral.modules.validator.engine import ValidatorEngine
 
-from .fakes import _serve, descriptor, pinned_entry
+from .fakes import TEST_TOKEN, _serve, descriptor, pinned_entry
 from .helpers import ROOT
 
 logging.disable(logging.CRITICAL)
@@ -116,20 +117,21 @@ class ServerDescribeTests(unittest.TestCase):
 
     def test_there_are_no_defaults_for_version_and_kinds(self):
         with self.assertRaises(TypeError):
-            serve(ValidatorEngine())
+            serve(ValidatorEngine(), token_env="KOSTRAL_TEST_TOKEN")
 
     def test_describe_is_served_over_http_and_process_still_works(self):
         engine = ValidatorEngine()
-        server = HTTPServer(("127.0.0.1", 0), _create_handler(engine, describe(engine, "1.0.0", ["Deployment"])))
+        server = HTTPServer(("127.0.0.1", 0), _create_handler(engine, describe(engine, "1.0.0", ["Deployment"]), TEST_TOKEN))
         threading.Thread(target=server.serve_forever, daemon=True).start()
         self.addCleanup(server.shutdown)
         base = f"http://127.0.0.1:{server.server_port}"
-
-        got = requests.get(f"{base}/describe", timeout=5)
+        auth = {"Authorization": f"Bearer {TEST_TOKEN}"}
+        
+        got = requests.get(f"{base}/describe", headers=auth, timeout=5)
         self.assertEqual(got.json(), describe(engine, "1.0.0", ["Deployment"]))
-        self.assertEqual(requests.get(f"{base}/other", timeout=5).status_code, 404)
+        self.assertEqual(requests.get(f"{base}/other", headers=auth, timeout=5).status_code, 404)
 
-        client = HTTPModuleClient(engine.name, f"{base}/process")
+        client = HTTPModuleClient(engine.name, f"{base}/process", token=TEST_TOKEN)
         ServiceBus([], parallel_checks=[client], seq_after=[]).run(ctx())
 
 
@@ -206,11 +208,13 @@ class RegistryEntryTests(unittest.TestCase):
     def test_every_entry_in_the_shipped_example_registry_loads(self):
         with open(os.path.join(ROOT, "examples/remote/registry.json")) as f:
             registry = json.load(f)
-        for key, entry in registry.items():
-            with self.subTest(key):
-                asked = {"mutates": entry.get("metadata", {}).get("mutates", False)}
-                self.assertEqual(from_registry(entry, metadata=asked).name, entry["name"])
-
+        tokens = {entry["token_env"]: "x" * 32 for entry in registry.values()}
+        with mock.patch.dict(os.environ, tokens):
+            for key, entry in registry.items():
+                with self.subTest(key):
+                    asked = {"mutates": entry.get("metadata", {}).get("mutates", False)}
+                    self.assertEqual(from_registry(entry, metadata=asked).name, entry["name"])
+ 
 
 if __name__ == "__main__":
     unittest.main()

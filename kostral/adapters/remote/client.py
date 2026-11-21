@@ -1,6 +1,6 @@
 from urllib.parse import urljoin
 import requests
-
+from kostral.adapters.remote.auth import bearer, check_transport
 from kostral.core.base import RemoteModuleClient, Report
 from kostral.core.context import RunContext
 from kostral.core.ir import (
@@ -93,22 +93,37 @@ class HTTPModuleClient(RemoteModuleClient):
         name: str,
         endpoint: str,
         timeout: int = 30,
+        token: str = None
     ):
 
         self.name = name
         self.endpoint = endpoint
         self.timeout = timeout
+        self._token = token                     # never logged, never in an error message
+        if token:
+            check_transport(endpoint, name)    
         # A plain remote engine is read-only.
+    
         self.metadata = DEFAULT_METADATA
         self.pins = None
         self._verified = False
         self._input_kinds = [] 
 
+    def _request(self, method, url, **kwargs):
+        """Every request carries the token. A 401 is an authentication error."""
+        headers = bearer(self._token) if self._token else {}
+        response = requests.request(method, url, headers=headers, timeout=self.timeout, **kwargs)
+        if response.status_code == 401:
+            raise RemoteEngineError(
+                f"{self.name}: authentication failed, the server rejected "
+                f"{'the token' if self._token else 'the request (no token configured)'}")
+        return response
+
     def _handshake(self):
         """Ask the engine who it is BEFORE any document is sent."""
         url = urljoin(self.endpoint, "describe")
         try:
-            response = requests.get(url, timeout=self.timeout)
+            response = self._request("GET", url)
             response.raise_for_status()
             declared = check_descriptor(response.json(), self.name)
         except (requests.RequestException, ValueError) as exc:
@@ -141,11 +156,8 @@ class HTTPModuleClient(RemoteModuleClient):
             "opts": ctx.opts,
         }
 
-        response = requests.post(
-            self.endpoint,
-            json=payload,
-            timeout=self.timeout,
-        )
+        response = self._request("POST", self.endpoint, json=payload)
+        
 
         response.raise_for_status()
 

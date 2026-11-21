@@ -10,7 +10,8 @@
             "input_kinds": [
                 "Deployment"
             ]
-         }
+         },
+         "token_env": "KOSTRAL_TOKEN_OPTIMIZER"
     },
     "Y481@abc": {
         "name": "validator-engine",
@@ -21,7 +22,8 @@
                 "Deployment",
                 "Service"
             ]
-        }
+        },
+        "token_env": "KOSTRAL_TOKEN_VALIDATOR"
    
     },
     "Z481@abc": {
@@ -33,7 +35,8 @@
                 "Deployment"
             ]
     
-        }
+        },
+        "token_env": "KOSTRAL_TOKEN_SECURITY"
 
     }
 }

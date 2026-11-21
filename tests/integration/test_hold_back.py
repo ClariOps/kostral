@@ -25,7 +25,7 @@ from kostral.core.bus import ServiceBus
 from kostral.core.context import RunContext
 from kostral.core.contract import kind_accepted
 
-from .fakes import _serve, descriptor, pinned_entry
+from .fakes import TEST_TOKEN, _serve, descriptor, pinned_entry
 from .helpers import ROOT
 
 logging.disable(logging.CRITICAL)
@@ -195,14 +195,14 @@ class ServerRefusesUndeclaredKindsTests(unittest.TestCase):
                 seen.extend(kinds_of(ctx.irs))
 
         engine = Recorder()
-        server = HTTPServer(("127.0.0.1", 0), _create_handler(engine, describe(engine, "1.0.0", kinds)))
+        server = HTTPServer(("127.0.0.1", 0), _create_handler(engine, describe(engine, "1.0.0", kinds), TEST_TOKEN))
         threading.Thread(target=server.serve_forever, daemon=True).start()
         self.addCleanup(server.shutdown)
         return f"http://127.0.0.1:{server.server_port}", seen
 
     def test_a_real_server_only_ever_sees_its_declared_kinds(self):
         base, seen = self.serve(["Deployment", "Service"])
-        client = HTTPModuleClient("recorder", f"{base}/process")
+        client = HTTPModuleClient("recorder", f"{base}/process", token=TEST_TOKEN)
         ctx = make_ctx()
         ServiceBus([], parallel_checks=[client], seq_after=[]).run(ctx)
         self.assertEqual(seen, ["Deployment", "Service"])
@@ -212,7 +212,8 @@ class ServerRefusesUndeclaredKindsTests(unittest.TestCase):
         import requests
         from kostral.adapters.remote.client import _serialize_irs
         base, seen = self.serve(["Deployment"])
-        reply = requests.post(f"{base}/process", json={"irs": _serialize_irs(make_ctx().irs)}, timeout=5)
+        reply = requests.post(f"{base}/process", json={"irs": _serialize_irs(make_ctx().irs)},
+                              headers={"Authorization": f"Bearer {TEST_TOKEN}"}, timeout=5)
         self.assertEqual(reply.status_code, 400)
         self.assertIn("not accepted", reply.json()["error"])
         self.assertEqual(seen, [])                                     # the engine never ran

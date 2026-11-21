@@ -1,5 +1,6 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from kostral.adapters.remote.auth import is_authorized, read_token
 from kostral.core.base import Report
 from kostral.adapters.remote.client import _deserialize_irs
 from kostral.core.contract import CONTRACT_VERSION, check_descriptor, check_metadata, kind_accepted
@@ -16,19 +17,31 @@ def describe(engine, version, input_kinds):
     }, engine.name)
         
 
-def _create_handler(engine, descriptor):
+def _create_handler(engine, descriptor, token):
     class EngineHandler(BaseHTTPRequestHandler):
         
         def _send_json(self, code, payload):
             encoded = json.dumps(payload).encode("utf-8")
             self.send_response(code)
+            if code == 401:
+                self.send_header("WWW-Authenticate", "Bearer")
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(encoded)))
             self.end_headers()
             self.wfile.write(encoded)
-
+       
+        def _authorized(self):
+            """First thing every request does, before routing or reading a body,
+            so an unauthenticated caller learns nothing (not even which paths exist)."""
+            if is_authorized(self.headers.get("Authorization"), token):
+                return True
+            self._send_json(401, {"error": "unauthorized"})
+            return False
+       
         def do_GET(self):
-
+            if not self._authorized():
+                return
+            
             if self.path != "/describe":
                 self.send_error(404)
                 return
@@ -37,6 +50,8 @@ def _create_handler(engine, descriptor):
 
 
         def do_POST(self):
+            if not self._authorized():
+                return
 
             if self.path != "/process":
                 self.send_error(404)
@@ -108,13 +123,20 @@ def serve(
     *,
     version,
     input_kinds,
+    token_env,
     host="127.0.0.1",
     port=9000,
 ):
+    """Serve one engine. The operator declares the service's version, which
+    manifest kinds the engine analyzes, and the NAME of the environment variable
+    holding the shared token. There are no defaults on purpose, and the server
+    refuses to start without a usable token: it never runs open."""
+
+    token = read_token(token_env, engine.name)
 
     server = HTTPServer(
         (host, port),
-        _create_handler(engine, describe(engine, version, input_kinds)),
+        _create_handler(engine, describe(engine, version, input_kinds),token),
     )
 
     print(

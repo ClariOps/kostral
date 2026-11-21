@@ -1,14 +1,14 @@
 # KOSTRAL test report
 
-Generated 2026-11-20 18:48 by `tests/report.py`. Do not edit by hand.
+Generated 2026-11-21 17:19 by `tests/report.py`. Do not edit by hand.
 
 ## Summary
 
 | Outcome | Count |
 | --- | --- |
-| passed | 226 |
+| passed | 249 |
 | known failure | 1 |
-| total | 227 |
+| total | 250 |
 
 ## Known failures (code breaks a guarantee today)
 
@@ -120,6 +120,7 @@ Generated 2026-11-20 18:48 by `tests/report.py`. Do not edit by hand.
 | `test_matrix.test_examples_found` | test examples found |
 | `test_remote.test_remote_run_with_servers_down_fails_loudly` | A missing engine must be an error, never an empty report. |
 | `test_remote.test_a_secret_in_the_input_stays_out_of_the_engines_and_in_the_output` | The example servers declare Deployment/Service only. The Secret is held back by the client, and remote and local still render identical manifests. |
+| `test_remote.test_example_servers_need_their_own_token` | No token: 401. Their own token: 200. Another server's token: 401. |
 | `test_remote.test_remote_output_is_deterministic` | test remote output is deterministic |
 | `test_remote.test_remote_result_matches_local_result` | test remote result matches local result |
 | `test_runner.test_explain_and_optimize_report_each_gap_exactly_once` | test explain and optimize report each gap exactly once |
@@ -146,3 +147,25 @@ Generated 2026-11-20 18:48 by `tests/report.py`. Do not edit by hand.
 | `test_runner.test_the_runner_hands_back_what_the_workflow_returns` | test the runner hands back what the workflow returns |
 | `test_runner.test_workflow_and_coverage_each_run_exactly_once` | test workflow and coverage each run exactly once |
 | `test_runner.test_workflow_errors_are_not_swallowed` | test workflow errors are not swallowed |
+| `test_token.test_a_client_with_no_token_against_a_protected_server_fails_clearly` | test a client with no token against a protected server fails clearly |
+| `test_token.test_a_wrong_token_is_an_authentication_error_and_no_document_is_sent` | test a wrong token is an authentication error and no document is sent |
+| `test_token.test_the_token_is_sent_on_the_handshake_and_on_the_document_request` | test the token is sent on the handshake and on the document request |
+| `test_token.test_the_whole_path_works_against_the_real_handler` | test the whole path works against the real handler |
+| `test_token.test_only_the_exact_token_is_accepted` | test only the exact token is accepted |
+| `test_token.test_the_comparison_is_constant_time` | test the comparison is constant time |
+| `test_token.test_the_header_the_client_builds_is_accepted` | test the header the client builds is accepted |
+| `test_token.test_a_missing_token_is_an_error_that_names_the_variable` | test a missing token is an error that names the variable |
+| `test_token.test_a_weak_token_is_refused_without_repeating_it` | test a weak token is refused without repeating it |
+| `test_token.test_the_token_comes_from_the_environment` | test the token comes from the environment |
+| `test_token.test_token_env_must_be_a_variable_name_and_a_pasted_token_is_not_echoed` | test token env must be a variable name and a pasted token is not echoed |
+| `test_token.test_a_pasted_token_in_token_env_is_refused_and_not_repeated` | test a pasted token in token env is refused and not repeated |
+| `test_token.test_an_entry_without_token_env_is_an_error` | test an entry without token env is an error |
+| `test_token.test_an_unset_variable_is_an_error_not_an_unauthenticated_client` | test an unset variable is an error not an unauthenticated client |
+| `test_token.test_no_token_and_a_wrong_token_are_both_401_on_every_endpoint` | test no token and a wrong token are both 401 on every endpoint |
+| `test_token.test_serve_requires_a_token_variable_and_refuses_to_run_open` | test serve requires a token variable and refuses to run open |
+| `test_token.test_the_right_token_is_served` | test the right token is served |
+| `test_token.test_unknown_paths_do_not_reveal_anything_without_a_token` | test unknown paths do not reveal anything without a token |
+| `test_token.test_a_token_is_never_sent_over_plain_http_beyond_localhost` | test a token is never sent over plain http beyond localhost |
+| `test_token.test_a_token_may_go_over_https_or_to_this_machine` | test a token may go over https or to this machine |
+| `test_token.test_the_client_enforces_it_when_it_has_a_token` | test the client enforces it when it has a token |
+| `test_token.test_the_registry_path_enforces_it_too` | test the registry path enforces it too |
