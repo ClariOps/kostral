@@ -1,288 +1,49 @@
-## ⚖️ Role of This Document
-
-This document defines the **strict behavioral contract** of Kostral.
-
-- Architecture describes *how the system is built*
-- Guarantees define *how the system must behave*
-
-In case of conflict, **guarantees take precedence**.
-
-# 🔒 Kostral Guarantees
-
-Kostral is designed to provide **predictable, transparent, and safe pre-deployment intelligence** for Kubernetes.
-
-This document defines the **non-negotiable guarantees** that govern system behavior, rule design, and execution flow.
-
----
-
-## 🎯 Core Guarantee
-
-> Same input → same output → same decisions
-
-Kostral is deterministic, explicit, and free from hidden behavior.
-
----
-
-## 🧠 System Behavior Guarantees
-
-### 1. Deterministic Execution
-
-* Identical input always produces identical output
-* No randomness or hidden state
-* Rule execution order is fixed and predictable
-
----
-
-### 2. 🔒 IR Mutation Boundary
-
-> **Within the current Kostral architecture, IR mutation is limited to engine responsibilities that explicitly allow it.**
-
-Currently:
-
-```text
-Optimizer  → may mutate IR
-Validator  → must not mutate IR
-Security   → must not mutate IR
-Renderer   → must not perform preparation mutations
-```
-
-Any mutation performed by an Optimizer rule must be explicitly reported.
-
-These boundaries are currently maintained through the engine implementation, rule design, tests, and contributor conventions. They are **not enforced by a separate runtime contract-authority system**.
-
-If a future engine requires mutation, its responsibility and mutation behavior should be explicitly documented when that engine is introduced.  
-
----
-
-### 3. Strict Separation of Detection and Action
-
-* **Validator** and **Security** engines:
-
-  * MUST NOT modify IR
-  * MUST only detect and report issues
-
-* **Optimizer Engine**:
-
-  * Responsible for improvements 
-
-👉 Detection and action are intentionally separated to ensure clarity and control
-
----
-
-### 4. No Hidden Side Effects
-
-* Rules MUST be isolated
-* Rules MUST NOT share state
-* Rules MUST NOT depend on other rules
-* Execution of one rule MUST NOT affect another
-
----
-
-### 5. Pipeline Integrity
-
-The current default workflow is:
-
-Input → IR → Optimizer → Validator → Security → Renderer → (Optional) Cloud Execution
-
-The workflow is one-directional:
-
-- each stage consumes the state produced by the previous stage
-- no hidden backward data flow is permitted
-- workflow composition does not create implementation dependencies between engines
-
----
-
-### 6. Transparent Reporting
-
-Every issue or change includes:
-
-* Resource name
-* Rule name
-* Category
-* Clear human-readable message
-
-Additionally:
-
-#### Validator / Security Reports:
-
-* issue
-* fix
-* (optional) impact
-
-#### Optimizer Reports:
-
-* exact mutation performed
-* before → after values
-
----
-
-### 7. Deployment Safety
-
-* Cloud Engine:
-
-  * MUST NOT modify manifests
-  * MUST NOT apply defaults
-  * MUST ONLY execute deployment
-
-* Deployment is optional and never required for analysis
-
----
-
-### 8. Environment-Agnostic Core
-
-* Core engines (Optimizer, Validator, Security):
-
-  * MUST NOT depend on cloud providers
-
-* Environment-specific behavior must be applied **before deployment** (future adapter layer)
-
----
-
-### 9. No Cross-Resource Logic (Current Phase)
-
-Kostral supports analyzing multiple Kubernetes resources across files and directories.
-
-However:
-
-* Each resource is analyzed **independently**
-* No relationships are inferred between resources
-* No assumptions are made about connections (e.g., Deployment ↔ Service)
-
-This ensures:
-
-* predictable behavior
-* rule isolation
-* simpler debugging
-
-👉 Cross-resource intelligence will be introduced in a **dedicated Relationship Engine** in future versions.
-
----
-### 10. Future: Relationship-Aware Analysis
-
-Kostral will evolve to include a **Relationship Engine** responsible for cross-resource analysis.
-
-This engine will:
-
-* analyze relationships between resources (Deployment, Service, Ingress, etc.)
-* detect broken or missing connections
-* identify system-level misconfigurations
-
-Examples include:
-
-* Deployment without a Service
-* Service without matching selectors
-* Ingress pointing to non-existent services
-
-### Design Constraint:
-
-* MUST NOT mutate IR (initial phase)
-* MUST only detect and report issues
-
-This preserves the core guarantee:
-
-> Detection remains separate from mutation
-
----
-
-### 11. Environment-Aware Behavior (Future)
-
-Kostral may support environment-specific behavior through an Adapter Layer.
-
-The Adapter Layer:
-
-- MUST provide environment context only
-- MUST NOT directly mutate IR
-
-The Adapter Layer may influence decisions made by an engine,
-but mutation remains the responsibility of the engine that owns
-that mutation behavior.
-
-For the current architecture:
-
-Optimizer → may mutate IR
-Validator → read-only
-Security → read-only
-
-Future engines such as AutoFix may introduce additional mutation
-capabilities when their responsibility and behavior are explicitly
-defined.
-
-### 12. CLI Simplicity
-
-Kostral must remain:
-
-* simple to run
-* fast to execute
-* easy to understand
-
-Output must prioritize clarity over complexity.
-
----
-
-## 🚫 What Kostral Does NOT Guarantee
-
-Kostral intentionally does NOT:
-
-* Guarantee perfect optimization for every workload
-* Replace Kubernetes tools (kubectl, Helm)
-* Manage runtime orchestration
-* Provide post-deployment monitoring
-
-Kostral focuses strictly on **pre-deployment intelligence**
-
----
-
-## 🔮 Future Guarantees (Planned)
-
-As Kostral evolves, additional guarantees may include:
-
-* Safe and controlled auto-fix engine
-* Cross-resource awareness
-* Cost estimation accuracy
-* Policy enforcement for teams
-
----
-
-## 🧩 Future Extension: Auto-Fix Model
-
-Kostral may introduce a separate **AutoFix Engine** to apply fixes safely.
-
-### Planned Flow:
-
-```text
-Optimizer → Validator → Security → AutoFix → Renderer
-```
-
-### Design Principles:
-
-* Validator/Security detect issues
-* AutoFix applies fixes (opt-in)
-* Mutation remains controlled and explicit
-
-👉 This preserves the core guarantee:
-**Detection ≠ Action**
-
----
-
-## 🧠 Final Principle
-
-> Kostral makes decisions visible, not magical.
-
-Users should always understand:
-
-* what changed
-* why it changed
-* how to override it
-
----
-
-## 🎯 Summary
-
-Kostral guarantees:
-
-* Predictability
-* Transparency
-* Safety
-* Modularity
-
-Before anything reaches your cluster.
+# Guarantees
+
+This page lists what Kostral promises and, for each promise, how it is enforced. A promise with no enforcement says so.
+
+- **Runtime check** means the code refuses to continue if the promise is broken (the bus or the remote client raises an error, exit code 3).
+- **Test** means a test in `tests/integration/` fails if the promise is broken. Test ids are `file.test_name`.
+- The [test report](transparency/test-report.md) is generated by `tests/report.py`; it lists every test and the known failures.
+
+If this page and the code disagree, the code and its tests win; please open an issue.
+
+## What Kostral guarantees
+
+| # | Guarantee | Runtime check | Test |
+| :-- | :--- | :--- | :--- |
+| 1 | Same input gives the same output, from any working directory and in any file order | no | `test_guarantees.test_same_output_twice_from_different_directories`, `test_directory_input_does_not_depend_on_file_order`, `test_remote.test_remote_output_is_deterministic`, `test_matrix` (snapshot per example) |
+| 2 | Source files are never rewritten; analysis commands return the manifest unchanged | no | `test_guarantees.test_source_files_are_never_modified`, `test_explain_yaml_returns_the_manifest_unchanged` |
+| 3 | A read-only engine cannot change a manifest | yes, bus snapshot before and after | `test_contract.test_engine_that_changes_manifests_without_declaring_it_is_rejected`, `test_remote_that_changes_manifests_without_permission_is_rejected` |
+| 4 | A mutating engine that changes a manifest must add at least one `optimization` finding | yes | `test_contract.test_mutating_engine_must_report_what_it_changed`, `test_mutating_engine_that_reports_is_accepted` |
+| 5 | Earlier findings are never erased or edited; the report only grows | yes | `test_contract.test_engine_cannot_delete_earlier_findings`, `test_remote_engine_cannot_erase_findings` |
+| 6 | Kinds Kostral does not model are reported as unanalyzed, rendered unchanged, and never edited, removed or reordered by any engine | yes | `test_coverage.test_every_unmodeled_document_is_reported`, `test_unmodeled_documents_are_rendered_unchanged_and_in_order`, `test_runner.test_editing_an_opaque_document_is_rejected`, `test_removing_an_opaque_document_is_rejected`, `test_reordering_opaque_documents_is_rejected` |
+| 7 | Engine permissions are declared, validated and frozen when the bus is built; an engine cannot grant itself mutation | yes | `test_contract.test_engine_cannot_grant_itself_mutation_during_a_run`, `test_engine_cannot_edit_its_metadata_in_place`, `test_a_typo_in_metadata_is_an_error_not_silently_ignored` |
+| 8 | A mutating engine cannot be placed in `parallel_checks`; those engines run in list order | yes (bus refuses to build) | `test_contract.test_workflow_cannot_put_a_mutating_engine_in_parallel_checks`, `test_parallel_checks_run_in_list_order` |
+| 9 | A remote engine must match its descriptor (name, contract version, pinned version and kinds, mutation permission) before any document is sent | yes | `test_descriptor.test_a_mismatch_means_no_document_is_ever_sent`, `test_each_mismatch_is_refused_with_its_own_reason`, `test_workflow_allowing_mutation_must_match_what_the_engine_declares` |
+| 10 | Remote mutation needs both the workflow's request and the registry's approval | yes | `test_contract.test_remote_mutation_needs_workflow_request_and_registry_approval`, `test_registry_approval_alone_does_not_make_an_engine_mutating` |
+| 11 | A Secret is sent to a remote engine only if the registry names the kind `Secret`; held documents come back in place | yes | `test_hold_back.test_a_secret_never_reaches_an_engine_that_did_not_ask_for_it`, `test_a_secret_is_sent_only_when_the_registry_names_it`, `test_remote.test_a_secret_in_the_input_stays_out_of_the_engines_and_in_the_output` |
+| 12 | Remote calls need a token (16 characters or more, read from an environment variable); the token is compared in constant time and is never sent over plain http beyond localhost | yes | `test_token.test_no_token_and_a_wrong_token_are_both_401_on_every_endpoint`, `test_the_comparison_is_constant_time`, `test_a_token_is_never_sent_over_plain_http_beyond_localhost`, `test_a_weak_token_is_refused_without_repeating_it` |
+| 13 | An engine failure is an error, never an empty result | yes | `test_descriptor.test_an_unreachable_descriptor_is_an_error_not_an_empty_result`, `test_contract.test_reply_without_findings_is_an_error_not_an_empty_result`, `test_remote.test_remote_run_with_servers_down_fails_loudly` |
+| 14 | CI can tell "the manifest failed" (exit 1) from "koss broke" (exit 3) | yes | `test_guarantees.test_findings_and_crash_have_different_exit_codes`, `test_failed_status_exits_nonzero`, `test_good_manifest_exits_zero` |
+| 15 | A remote run matches the local run for the same input | no | `test_remote.test_remote_result_matches_local_result` |
+
+## Promises that are not enforced
+
+| Promise | Why not | Where it stands |
+| :--- | :--- | :--- |
+| Rules do not share state or depend on each other | A convention, checked by review only | [rule audit](transparency/rule-audit.md) |
+| The report of a mutating engine describes every change it made | The bus requires at least one `optimization` finding, not a complete list | Open question; see [engine contract](engine-contract.md) |
+
+## What Kostral does not guarantee
+
+- That any engine's findings are correct, including security findings.
+- That an optimization is the right one for your workload.
+- Determinism of an engine that Kostral does not control. Kostral guarantees how engines are run, checked and reported (execution determinism). An engine that calls a model or an external service can still return different findings for the same input.
+- Anything an engine does outside the manifests and the report (files, network, other processes).
+- That a remote engine is available. An unreachable engine is an error (guarantee 13), not a pass.
+- Relationships between resources, such as a Service whose selector matches no Deployment (see `examples/cases/known-limitations/`).
+
+## Known failure
+
+One test is marked as an expected failure today (`test_runner.test_adding_a_typed_document_is_not_touching_the_opaque_ones`): a mutating engine that inserts a typed document ahead of unanalyzed ones is rejected, because the snapshot records absolute positions. It affects guarantee 6 only in the direction of rejecting too much, not too little.
