@@ -1,10 +1,9 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/kostral-banner-dark.svg">
-    <img src="docs/assets/kostral-banner.svg" alt="Kostral: Engine Governance for Kubernetes" width="800">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/kostral-logo-dark.svg">
+    <img src="docs/assets/kostral-logo.svg" alt="Kostral: Engine Governance for Kubernetes" width="800">
   </picture>
 </p>
-
 
 # Kostral: Engine Governance for Kubernetes
 **Same manifest, same decision, every time, with every change explained. Engines plug in under one contract.**
