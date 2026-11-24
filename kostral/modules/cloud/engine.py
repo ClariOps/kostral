@@ -34,6 +34,7 @@ class CloudEngine(Module):
         except Exception as e:
             error_msg = f"Failed to deploy to AKS: {e}"
             logger.error(error_msg)
+            ctx.artifacts["deploy_error"] = error_msg
             #ctx.report.add_error(error_msg)
 
                 

@@ -1,5 +1,6 @@
 from typing import Dict, List, Optional,Any
 from kostral.core.base import IR
+from copy import deepcopy
 
 class ServiceIR(IR):
     kind = "ServiceIR"
@@ -22,8 +23,16 @@ class ServiceIR(IR):
             
     def __repr__(self):
         return f"ServiceIR(name={self.name}, type={self.service_type}, ports={self.ports})"    
+    def _state(self):
+        return {
+            "name": self.name,
+            "selector": self.selector,
+            "ports": self.ports,
+            "service_type": self.service_type,
+        }
     
     def _from_manifest(self, m: Dict[str, Any]) -> None:
+        self._source = deepcopy(m)
         metadata = m.get("metadata", {})
         spec = m.get("spec", {})
 
@@ -40,8 +49,15 @@ class ServiceIR(IR):
         self.selector = spec.get("selector", {})
         self.ports = ports
         self.service_type = spec.get("type", "ClusterIP")
+        self._loaded = deepcopy(self._state())
     
     def to_manifest(self) -> Dict[str, Any]:
+        if (
+            getattr(self, "_source", None) is not None
+            and self._state() == self._loaded
+        ):
+            return deepcopy(self._source)
+        
         ports = []
         for p in self.ports:
             port_def = {

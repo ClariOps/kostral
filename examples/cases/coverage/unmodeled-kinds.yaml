@@ -1,0 +1,63 @@
+# Kinds KOSTRAL has no model for. They must be reported as unanalyzed and
+# rendered back exactly as written, in this order.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - name: db
+        image: postgres:latest
+        securityContext:
+          privileged: true
+          runAsUser: 0
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: app-runner
+  namespace: prod
+  annotations:
+    note: keep-me
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: web
+        image: nginx:1.25
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nightly
+spec:
+  schedule: "0 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: job
+            image: busybox:latest

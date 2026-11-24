@@ -1,5 +1,6 @@
 from typing import Dict, List, Optional,Any
 from kostral.core.base import IR
+from copy import deepcopy
 
 class ConfigMapIR(IR):
     kind = "ConfigMapIR"
@@ -22,15 +23,18 @@ class ConfigMapIR(IR):
         return f"ConfigMapIR(name={self.name}, keys={list(self.data.keys())})"
 
     def _from_manifest(self, m: dict):
+        self._source = deepcopy(m)
+
         self.name = m["metadata"]["name"]
         self.data = m.get("data")
-       
+
+        self._loaded = deepcopy({
+            "name": self.name,
+            "data": self.data,
+        })
+        
     def to_manifest(self) -> dict:
-        return {
-            "apiVersion": "v1",
-            "kind": "ConfigMap",
-            "metadata": {
-                "name": self.name
-            },
-            "data": self.data
-        }
+        if (getattr(self, "_source", None) is not None 
+            and {"name": self.name, "data": self.data} == self._loaded
+        ):
+            return deepcopy(self._source)

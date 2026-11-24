@@ -6,7 +6,7 @@ from kostral.modules.optimizer.rules.generic.memDefRule import MemoryDefaultRule
 from kostral.modules.optimizer.rules.generic.limCpuDefRule import CpuLimitRule
 from kostral.modules.optimizer.rules.generic.limMemDefRule import MemoryLimitRule
 from kostral.modules.optimizer.rules.generic.replicaDefRule import ReplicaDefRule
-
+from types import MappingProxyType
 
 
 
@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 class OptimizerEngine(Module):
     name = "optimizer-engine"
+    metadata = MappingProxyType({"mutates": True})
     def __init__(self):
         self.rules = [
             CpuDefaultRule(),
