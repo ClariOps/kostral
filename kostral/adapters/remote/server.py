@@ -1,14 +1,57 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from kostral.adapters.remote.auth import is_authorized, read_token
 from kostral.core.base import Report
 from kostral.adapters.remote.client import _deserialize_irs
+from kostral.core.contract import CONTRACT_VERSION, check_descriptor, check_metadata, kind_accepted
 
 
-def _create_handler(engine):
+def describe(engine, version, input_kinds):
+    """What this server tells a client about itself (GET /describe)."""
+    return check_descriptor({
+        "name": engine.name,
+        "version": version,
+        "contract_version": CONTRACT_VERSION,
+        "mutates": check_metadata(getattr(engine, "metadata", {}), engine.name)["mutates"],
+        "input_kinds": list(input_kinds),
+    }, engine.name)
+        
 
+def _create_handler(engine, descriptor, token):
     class EngineHandler(BaseHTTPRequestHandler):
+        
+        def _send_json(self, code, payload):
+            encoded = json.dumps(payload).encode("utf-8")
+            self.send_response(code)
+            if code == 401:
+                self.send_header("WWW-Authenticate", "Bearer")
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(encoded)))
+            self.end_headers()
+            self.wfile.write(encoded)
+       
+        def _authorized(self):
+            """First thing every request does, before routing or reading a body,
+            so an unauthenticated caller learns nothing (not even which paths exist)."""
+            if is_authorized(self.headers.get("Authorization"), token):
+                return True
+            self._send_json(401, {"error": "unauthorized"})
+            return False
+       
+        def do_GET(self):
+            if not self._authorized():
+                return
+            
+            if self.path != "/describe":
+                self.send_error(404)
+                return
+
+            self._send_json(200, descriptor)
+
 
         def do_POST(self):
+            if not self._authorized():
+                return
 
             if self.path != "/process":
                 self.send_error(404)
@@ -27,15 +70,22 @@ def _create_handler(engine):
                     data.get("irs", [])
                 )
 
+                # Defense in depth: never process a kind this engine did not declare.
+                for ir in ctx_irs:
+                    kind = ir.to_manifest().get("kind")
+                    if not kind_accepted(descriptor["input_kinds"], kind):
+                        self._send_json(400, {"error": f"kind '{kind}' is not accepted by this engine"})
+                        return
+
                 # Import here to avoid unnecessary coupling at module load time.
                 from kostral.core.context import RunContext
 
                 ctx = RunContext(
                     irs=ctx_irs,
                     opts=data.get("opts", {}),
-                    report=Report.from_dict(data.get("report", {}))
+                    report=Report()
                 )
-                print(ctx.__dict__)
+
                 engine.process(ctx)
 
                 response = {
@@ -46,46 +96,19 @@ def _create_handler(engine):
                         }
                         for ir in ctx.irs
                     ],
-                    "report": ctx.report.to_dict(),
+                    "findings": [
+                        event.to_dict()
+                        for event in ctx.report.events
+                    ],
                 }
-
-                encoded = json.dumps(
-                    response
-                ).encode("utf-8")
-             
-                self.send_response(200)
-                self.send_header(
-                    "Content-Type",
-                    "application/json",
-                )
-                self.send_header(
-                    "Content-Length",
-                    str(len(encoded)),
-                )
-                self.end_headers()
-
-                self.wfile.write(encoded)
+                
+                self._send_json(200, response)
 
             except Exception as exc:
                 import traceback
                 traceback.print_exc()
 
-                error = json.dumps(
-                    {"error": str(exc)}
-                ).encode("utf-8")
-
-                self.send_response(500)
-                self.send_header(
-                    "Content-Type",
-                    "application/json",
-                )
-                self.send_header(
-                    "Content-Length",
-                    str(len(error)),
-                )
-                self.end_headers()
-
-                self.wfile.write(error)
+                self._send_json(500, {"error": str(exc)})
 
         def log_message(self, format, *args):
             print(
@@ -97,13 +120,23 @@ def _create_handler(engine):
 
 def serve(
     engine,
+    *,
+    version,
+    input_kinds,
+    token_env,
     host="127.0.0.1",
     port=9000,
 ):
+    """Serve one engine. The operator declares the service's version, which
+    manifest kinds the engine analyzes, and the NAME of the environment variable
+    holding the shared token. There are no defaults on purpose, and the server
+    refuses to start without a usable token: it never runs open."""
+
+    token = read_token(token_env, engine.name)
 
     server = HTTPServer(
         (host, port),
-        _create_handler(engine),
+        _create_handler(engine, describe(engine, version, input_kinds),token),
     )
 
     print(

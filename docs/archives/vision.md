@@ -32,13 +32,6 @@ Teams struggle with:
 * Missing or incorrect configurations → unreliable deployments
 * Security misconfigurations → production risks
 
-Most tools either:
-
-* validate syntax only
-* or detect issues after deployment
-
-👉 leaving teams reactive instead of proactive
-
 ---
 
 ## 💡 The Approach

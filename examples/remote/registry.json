@@ -1,14 +1,42 @@
 {
     "X092@jjj": {
-        "name": "optimizer",
-        "endpoint": "http://127.0.0.1:9001/process"
+        "name": "optimizer-engine",
+        "endpoint": "http://127.0.0.1:9001/process",
+        "metadata": {
+            "mutates": true
+        },
+        "descriptor": {
+            "version": "1.0.0",
+            "input_kinds": [
+                "Deployment"
+            ]
+         },
+         "token_env": "KOSTRAL_TOKEN_OPTIMIZER"
     },
     "Y481@abc": {
-        "name": "validator",
-        "endpoint": "http://127.0.0.1:9002/process"
+        "name": "validator-engine",
+        "endpoint": "http://127.0.0.1:9002/process",
+        "descriptor": {
+            "version": "1.0.0",
+            "input_kinds": [
+                "Deployment",
+                "Service"
+            ]
+        },
+        "token_env": "KOSTRAL_TOKEN_VALIDATOR"
+   
     },
     "Z481@abc": {
-        "name": "security",
-        "endpoint": "http://127.0.0.1:9003/process"
+        "name": "security-engine",
+        "endpoint": "http://127.0.0.1:9003/process",
+        "descriptor": {
+            "version": "1.0.0",
+            "input_kinds": [
+                "Deployment"
+            ]
+    
+        },
+        "token_env": "KOSTRAL_TOKEN_SECURITY"
+
     }
 }

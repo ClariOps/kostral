@@ -1,8 +1,8 @@
 import os, argparse
-from kostral.core.ir import (DeploymentIR, ServiceIR, HelmIR, IngressIR, ConfigMapIR, SecretIR, PVCIR)
+from kostral.core.ir import (DeploymentIR, ServiceIR, HelmIR, IngressIR, ConfigMapIR, SecretIR, PVCIR, OpaqueIR)
 import importlib.util
 from colorama import Fore, Style, init
-
+from kostral.modules.coverage.engine import CoverageEngine
 IR_MAPPING = {
     "Deployment": DeploymentIR,
     "Service": ServiceIR,
@@ -31,53 +31,54 @@ def load_workflow(path):
     return module
 
 
+def _to_ir(data):
+    """Mechanical mapping only: typed IR if known, OpaqueIR otherwise."""
+    ir_class = IR_MAPPING.get(data.get("kind"), OpaqueIR)
+    return ir_class(manifest=data)
+
+
 def load_yaml_irs(user_path, logger):
     import glob, os, yaml, sys
 
     irs = []
-    # ✅ NEW: stdin support for helm
-    if user_path == "-":
-        documents = yaml.safe_load_all(sys.stdin.read())
 
+    def collect(documents):
         for data in documents:
-            if not data or "kind" not in data:
+            if not data or not isinstance(data, dict) or "kind" not in data:
                 continue
+            irs.append(_to_ir(data))
 
-            kind = data.get("kind")
-            ir_class = IR_MAPPING.get(kind)
-
-            if ir_class:
-                irs.append(ir_class(manifest=data))
-            else:
-                logger.warning(f"No IR class defined for kind '{kind}' (stdin)")
-
+    if user_path == "-":
+        collect(yaml.safe_load_all(sys.stdin.read()))
         return irs
-    
-    # directory vs file
+
     if os.path.isdir(user_path):
         search_pattern = os.path.join(user_path, "*.y*ml")
     else:
         search_pattern = user_path
 
-    for filepath in glob.glob(search_pattern):
+    for filepath in sorted(glob.glob(search_pattern)):
         with open(filepath, "r") as f:
-            documents = yaml.safe_load_all(f)
-
-            for data in documents:
-                if not data or "kind" not in data:
-                    continue
-
-                kind = data.get("kind")
-                ir_class = IR_MAPPING.get(kind)
-
-                if ir_class:
-                    irs.append(ir_class(manifest=data))
-                else:
-                    logger.warning(
-                        f"No IR class defined for kind '{kind}' in {filepath}"
-                    )
+            collect(yaml.safe_load_all(f))
 
     return irs
+
+EXIT_OK = 0
+EXIT_FINDINGS = 1
+EXIT_USAGE = 2
+EXIT_CRASH = 3
+
+def exit_code_for(ctx):
+    """Determine process exit code from the completed RunContext."""
+
+    if ctx.report.has_errors():
+        return EXIT_FINDINGS
+
+    if ctx.artifacts.get("deploy_error"):
+        return EXIT_FINDINGS
+
+    return EXIT_OK
+
 
 def build_opts(args):
     opts = {}
@@ -123,6 +124,24 @@ Analyze • Optimize • Validate • Secure
 
 
 def valid_file(path):
+    if path == "-":
+        return path
+
     if not os.path.exists(path):
-        raise argparse.ArgumentTypeError(f"File not found: {path}")
+        raise argparse.ArgumentTypeError(
+            f"File not found: {path}"
+        )
+
     return path
+
+class KostralRunner:
+
+    def __init__(self, workflow):
+        self.workflow = workflow
+
+    def run(self, ctx):
+        # Mandatory KOSTRAL system responsibility
+        CoverageEngine().process(ctx)
+
+        # User-composed workflow
+        return self.workflow.run(ctx)

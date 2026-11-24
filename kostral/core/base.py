@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
 from enum import Enum
 
+from kostral.core.contract import DEFAULT_METADATA, check_metadata
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -14,6 +16,10 @@ class IR(ABC):
 class Module(ABC):
     """Every engine implements Module. Swappable with a remote client via same interface."""
     name: str
+    
+        # Engine permission declaration.
+    # Read-only by default.
+    metadata = DEFAULT_METADATA
 
     @abstractmethod
     def process(self, ctx: "RunContext") -> None:
@@ -250,6 +256,61 @@ class Report:
         )
         self.events.append(event)
 
+    
+
+    def append_event(self, data):
+        """
+        Append ONE finding from a dictionary.
+
+        Remote engines can add findings but cannot replace
+        the report that already exists.
+        """
+
+        if not isinstance(data, dict):
+            raise ValueError(
+                f"finding must be an object, "
+                f"got {type(data).__name__}"
+            )
+
+        level = data.get("level")
+
+        if level not in (
+            "optimization",
+            "warning",
+            "error"
+        ):
+            raise ValueError(
+                f"finding has invalid level: {level!r}"
+            )
+
+        for key in ("engine", "rule", "resource"):
+            if not data.get(key):
+                raise ValueError(
+                    f"finding is missing '{key}'"
+                )
+
+        self._add(
+            level,
+            data["engine"],
+            data.get("category") or "generic",
+            data.get("severity") or "low",
+            data["rule"],
+            data["resource"],
+            data.get("message"),
+            data.get("issue"),
+            data.get("impact"),
+            data.get("fix"),
+        )
+
+    def extend(self, findings):
+        """Append a collection of findings."""
+
+        for data in findings:
+            self.append_event(data)
+
+
+
+
     def optimization(self, rule, engine, resource, message, category="generic", severity="low"):
         self._add("optimization", engine, category, severity, rule, resource, message)
 
@@ -289,3 +350,24 @@ class RuleSeverity(Enum):
 class RemoteModuleClient(Module, ABC):
     """Drop-in replacement for Module in registry without changing callers."""
     pass
+
+
+
+def with_metadata(engine, **overrides):
+    """
+    Let a workflow author set engine metadata.
+
+    Example:
+        with_metadata(MyEngine(), mutates=True)
+    """
+
+    engine.metadata = check_metadata(
+        {
+            **engine.metadata,
+            **overrides
+        },
+        getattr(engine, "name", "engine")
+    )
+
+    return engine
+

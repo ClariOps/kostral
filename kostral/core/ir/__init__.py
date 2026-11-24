@@ -7,6 +7,7 @@ from .configmap import ConfigMapIR
 from .secret import SecretIR
 from .pvc import PVCIR
 from .helm import HelmIR
+from .opaque import OpaqueIR
 
 __all__ = [
     "IR",
@@ -17,4 +18,6 @@ __all__ = [
     "SecretIR",
     "PVCIR",
     "HelmIR",
+    "OpaqueIR"
+
 ]
