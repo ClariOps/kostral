@@ -1,6 +1,8 @@
 
-from kostral.core.contract import check_metadata, check_pins
+from kostral.core.contract import PROFILES, check_metadata, check_pins
 from kostral.adapters.remote.auth import check_env_name, read_token
+from kostral.adapters.external.client import RemoteExternalClient
+from kostral.adapters.external.sarif import SarifProfile
 from .client import HTTPModuleClient
 
 
@@ -33,12 +35,17 @@ def from_registry(
     name = entry.get("name")
     who = f"registry entry '{name}'"
 
-    unknown = set(entry) - {"name", "endpoint", "metadata", "descriptor", "token_env"}
+    unknown = set(entry) - {"name", "endpoint", "metadata", "descriptor", "token_env","profile", "mapping"}
     if unknown:
         raise ValueError(f"{who}: unknown keys {sorted(unknown)}")
     if "token_env" not in entry:
         raise ValueError(f"{who}: 'token_env' is required (the NAME of the environment variable holding the token)")
 
+    profile = entry.get("profile", "native")
+    if profile not in PROFILES:
+        raise ValueError(f"{who}: 'profile' must be one of {sorted(PROFILES)}")
+    if profile == "native" and "mapping" in entry:
+        raise ValueError(f"{who}: 'mapping' belongs to external entries only")
 
     pins = check_pins(entry.get("descriptor"), who)
     
@@ -49,6 +56,10 @@ def from_registry(
         metadata or {},
         name
     )
+
+
+    if profile == "external" and (approved["mutates"] or requested["mutates"]):
+        raise ValueError(f"{who}: an external scanner is read-only; mutates must not be requested or approved")
 
     if (
         requested["mutates"]
@@ -61,8 +72,12 @@ def from_registry(
             f"but not approved by the registry"
         )
     token = read_token(check_env_name(entry["token_env"], who), who)
-
-    client = HTTPModuleClient(name, entry["endpoint"], timeout, token=token)
+    if profile == "external":
+        # mapping is pinned in the registry, so the severity decisions are reviewed, not hidden in code
+        client = RemoteExternalClient(name, entry["endpoint"], timeout=timeout, token=token,
+                                      mapping=SarifProfile.from_dict(entry.get("mapping"), who))
+    else:
+        client = HTTPModuleClient(name, entry["endpoint"], timeout, token=token)
     client.pins = pins
     client.metadata = requested
 

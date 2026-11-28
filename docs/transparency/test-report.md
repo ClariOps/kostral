@@ -1,14 +1,14 @@
 # KOSTRAL test report
 
-Generated 2026-11-21 17:19 by `tests/report.py`. Do not edit by hand.
+Generated 2026-11-28 21:01 by `tests/report.py`. Do not edit by hand.
 
 ## Summary
 
 | Outcome | Count |
 | --- | --- |
-| passed | 249 |
+| passed | 297 |
 | known failure | 1 |
-| total | 250 |
+| total | 298 |
 
 ## Known failures (code breaks a guarantee today)
 
@@ -83,6 +83,54 @@ Generated 2026-11-21 17:19 by `tests/report.py`. Do not edit by hand.
 | `test_descriptor.test_each_mismatch_is_refused_with_its_own_reason` | test each mismatch is refused with its own reason |
 | `test_descriptor.test_the_order_of_input_kinds_does_not_matter` | test the order of input kinds does not matter |
 | `test_descriptor.test_without_pins_identity_contract_and_mutation_are_still_verified` | test without pins identity contract and mutation are still verified |
+| `test_external.test_a_broken_scanner_is_exit_3_not_exit_1_and_not_a_pass` | CI must tell "the manifest failed" (1) from "the scanner broke" (3). |
+| `test_external.test_findings_are_exit_1_and_the_output_is_deterministic` | test findings are exit 1 and the output is deterministic |
+| `test_external.test_a_bad_log_changes_nothing` | test a bad log changes nothing |
+| `test_external.test_a_broken_tool_raises_it_is_not_an_empty_report` | test a broken tool raises it is not an empty report |
+| `test_external.test_documents_are_untouched_and_the_raw_log_is_namespaced_by_engine` | test documents are untouched and the raw log is namespaced by engine |
+| `test_external.test_findings_are_appended_after_what_was_already_reported` | test findings are appended after what was already reported |
+| `test_external.test_it_is_read_only_so_it_may_sit_in_parallel_checks_and_cannot_be_granted_mutation_by_accident` | test it is read only so it may sit in parallel checks and cannot be granted mutation by accident |
+| `test_external.test_nothing_of_an_accepted_kind_means_no_scan_and_the_artifact_says_so` | test nothing of an accepted kind means no scan and the artifact says so |
+| `test_external.test_same_input_same_findings` | test same input same findings |
+| `test_external.test_two_engines_cannot_share_a_name_and_overwrite_each_other` | test two engines cannot share a name and overwrite each other |
+| `test_external.test_an_external_scanner_cannot_declare_mutation` | test an external scanner cannot declare mutation |
+| `test_external.test_descriptor_profile_is_optional_and_checked` | test descriptor profile is optional and checked |
+| `test_external.test_registry_builds_the_right_client_and_refuses_nonsense` | test registry builds the right client and refuses nonsense |
+| `test_external.test_verify_refuses_a_profile_mismatch_in_both_directions` | test verify refuses a profile mismatch in both directions |
+| `test_external.test_a_broken_tool_behind_the_server_is_a_502_and_an_error_for_the_client` | test a broken tool behind the server is a 502 and an error for the client |
+| `test_external.test_a_kind_the_server_did_not_declare_gets_400` | test a kind the server did not declare gets 400 |
+| `test_external.test_every_request_needs_the_token_including_unknown_paths` | test every request needs the token including unknown paths |
+| `test_external.test_remote_gives_the_same_findings_as_local` | a remote scanner run matches the local run for the same input. |
+| `test_external.test_the_descriptor_declares_the_external_profile_and_read_only` | test the descriptor declares the external profile and read only |
+| `test_external.test_what_the_server_refuses` | test what the server refuses |
+| `test_external.test_remote_run_matches_the_local_run` | test remote run matches the local run |
+| `test_external.test_a_native_server_is_refused_before_anything_is_sent` | a server of the wrong profile gets no document. |
+| `test_external.test_a_reply_is_a_sarif_log_and_nothing_else` | an external reply cannot replace the report or change a manifest. |
+| `test_external.test_a_reply_over_the_size_limit_is_refused` | test a reply over the size limit is refused |
+| `test_external.test_a_scanner_that_claims_it_mutates_is_refused` | an external scanner is read-only. |
+| `test_external.test_a_secret_is_held_back_by_the_wildcard_and_sent_only_when_named` | test a secret is held back by the wildcard and sent only when named |
+| `test_external.test_an_external_server_is_refused_by_a_native_client` | test an external server is refused by a native client |
+| `test_external.test_an_unreachable_scanner_is_an_error_not_an_empty_report` | test an unreachable scanner is an error not an empty report |
+| `test_external.test_every_bad_answer_is_an_error_and_leaves_the_report_alone` | test every bad answer is an error and leaves the report alone |
+| `test_external.test_it_cannot_erase_earlier_findings_through_the_bus` | test it cannot erase earlier findings through the bus |
+| `test_external.test_it_sends_documents_only_and_appends_what_comes_back` | test it sends documents only and appends what comes back |
+| `test_external.test_each_document_is_its_own_file_in_order` | test each document is its own file in order |
+| `test_external.test_every_way_a_tool_can_break_is_a_tool_error` | a missing, failing, slow or garbled scanner is an error, never an empty result. |
+| `test_external.test_the_command_must_say_where_the_documents_are` | test the command must say where the documents are |
+| `test_external.test_unmodeled_kinds_reach_the_scanner_and_a_secret_does_not_unless_named` | ADR1: a scanner must see what the user wrote, not only what KOSTRAL models. |
+| `test_external.test_a_log_that_cannot_be_trusted_is_an_error_never_an_empty_report` | an untrustworthy scanner log is an error, never an empty result. |
+| `test_external.test_a_profile_can_decide_differently_and_it_is_explicit` | test a profile can decide differently and it is explicit |
+| `test_external.test_an_empty_results_list_is_a_clean_run` | test an empty results list is a clean run |
+| `test_external.test_an_unmapped_level_is_an_error_not_a_guess` | an unmapped scanner result is an error (exit 3), never a silently shorter report. |
+| `test_external.test_findings_are_exactly_what_the_report_accepts` | test findings are exactly what the report accepts |
+| `test_external.test_fix_comes_only_from_the_sources_the_profile_lists` | test fix comes only from the sources the profile lists |
+| `test_external.test_level_falls_back_to_the_rule_default_then_to_warning` | test level falls back to the rule default then to warning |
+| `test_external.test_levels_follow_the_profile_table` | an external finding's level and severity come from a pinned table, never from a guess. |
+| `test_external.test_no_source_for_fix_is_an_error_unless_the_profile_names_a_default` | KOSTRAL never invents a fix for an external finding. |
+| `test_external.test_order_never_depends_on_the_tool` | the order of external findings does not depend on the order the tool used. |
+| `test_external.test_profile_rejects_what_it_does_not_understand` | test profile rejects what it does not understand |
+| `test_external.test_resource_comes_from_the_document_and_is_never_parsed_from_the_message` | test resource comes from the document and is never parsed from the message |
+| `test_external.test_the_trivy_shaped_fixture_maps_to_two_errors_and_eight_warnings` | Ids, messages and lines are from a real Trivy 0.76.2 run on examples/demo/good.yaml; the SARIF envelope is synthetic. It proves the mapping rules, not Trivy's SARIF. |
 | `test_guarantees.test_directory_input_does_not_depend_on_file_order` | A folder of manifests must give identical output however the files were created. |
 | `test_guarantees.test_same_output_twice_from_different_directories` | same manifest, same output, from any working directory. |
 | `test_guarantees.test_exit_code_does_not_depend_on_dry_run_or_output_format` | same input, same decision, whatever the flags or renderer. |

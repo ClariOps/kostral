@@ -1,0 +1,24 @@
+{
+    "example-scanner": {
+        "name": "example-scanner",
+        "profile": "external",
+        "endpoint": "http://127.0.0.1:9011/process",
+        "descriptor": {"version": "1.0.0", "input_kinds": ["*"]},
+        "token_env": "KOSTRAL_TOKEN_SCANNER",
+        "mapping": {
+            "levels": {"error": ["error", "HIGH"], "warning": ["warning", "medium"], "note": ["warning", "low"]},
+            "fix_sources": ["fixes", "help", "help_uri"],
+            "category": "security"
+        }
+    },
+    "trivy": {
+        "name": "trivy",
+        "profile": "external",
+        "endpoint": "http://127.0.0.1:9012/process",
+        "descriptor": {"version": "0.76.2", "input_kinds": ["*"]},
+        "token_env": "KOSTRAL_TOKEN_TRIVY",
+        "mapping": {
+            "fix_sources": ["fixes", "help_uri"]
+        }
+    }
+}

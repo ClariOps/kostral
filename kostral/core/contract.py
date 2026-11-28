@@ -10,6 +10,12 @@ CONTRACT_VERSION = 1
 # What a remote engine publishes at /describe (see check_descriptor).
 DESCRIPTOR_FIELDS = frozenset({"name", "version", "contract_version", "mutates", "input_kinds"})
 
+# A descriptor MAY name a profile. Absent means "native" (every engine written
+# before profiles existed). An external scanner must say "external" explicitly.
+# This is additive, so CONTRACT_VERSION stays 1.
+PROFILES = frozenset({"native", "external"})
+OPTIONAL_DESCRIPTOR_FIELDS = frozenset({"profile"})
+
 # What a registry entry pins and the client verifies before sending anything.
 PIN_FIELDS = frozenset({"version", "input_kinds"})
 
@@ -125,6 +131,10 @@ def _check_kinds(kinds, who):
             or not all(isinstance(k, str) and k for k in kinds)):
         raise ValueError(f"{who}: input_kinds must be a non-empty list of kind names")
 
+def check_kinds(kinds, who="engine"):
+    """Public form of the kind-list check, for engines built outside this module."""
+    _check_kinds(kinds, who)
+
  
 def kind_accepted(input_kinds, kind):
     """May a document of this Kubernetes kind be sent to an engine that declares
@@ -140,9 +150,11 @@ def check_descriptor(declared, who="engine"):
     if not isinstance(declared, dict):
         raise ValueError(f"{who}: descriptor must be an object")
     missing = DESCRIPTOR_FIELDS - set(declared)
-    unknown = set(declared) - DESCRIPTOR_FIELDS
+    unknown = set(declared) - DESCRIPTOR_FIELDS - OPTIONAL_DESCRIPTOR_FIELDS
     if missing or unknown:
         raise ValueError(f"{who}: descriptor missing {sorted(missing)}, unknown {sorted(unknown)}")
+    if "profile" in declared and declared["profile"] not in PROFILES:
+        raise ValueError(f"{who}: descriptor 'profile' must be one of {sorted(PROFILES)}")
     for field in ("name", "version"):
         if not isinstance(declared[field], str) or not declared[field]:
             raise ValueError(f"{who}: descriptor '{field}' must be a non-empty string")
@@ -169,7 +181,7 @@ def check_pins(pins, who="engine"):
     return pins
 
 
-def verify_descriptor(declared, *, name, pins, mutates):
+def verify_descriptor(declared, *, name, pins, mutates, profile="native"):
     """The handshake rules. Raise EngineContractViolation unless the engine that
     answered is the one the workflow means: same name, same contract, the pinned
     version and kinds (when pinned), and the mutation permission the workflow
@@ -180,6 +192,14 @@ def verify_descriptor(declared, *, name, pins, mutates):
     if declared["name"] != name:
         raise EngineContractViolation(
             f"engine '{name}': the server identifies itself as '{declared['name']}'")
+    declared_profile = declared.get("profile", "native")
+    if declared_profile != profile:
+        raise EngineContractViolation(
+            f"engine '{name}': speaks the '{declared_profile}' profile, "
+            f"the workflow expects '{profile}'")
+    if profile == "external" and declared["mutates"]:
+        raise EngineContractViolation(
+            f"engine '{name}': an external scanner is read-only but declares mutates=True")
     if declared["contract_version"] != CONTRACT_VERSION:
         raise EngineContractViolation(
             f"engine '{name}': speaks contract {declared['contract_version']}, "

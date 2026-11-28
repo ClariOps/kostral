@@ -60,6 +60,16 @@ Engines run in the order `seq_before`, `parallel_checks`, `seq_after`. Despite i
 
 ## 5. Remote engines (experimental)
 
+The remote part of the contract has three parts. Part 1 is shared by every remote engine; parts 2 and 3 are the two **profiles** that say what travels over the wire.
+
+| Part | What it covers | Where |
+| :--- | :--- | :--- |
+| 1. Shared | Descriptor handshake, pins, token, errors, report only grows, bus checks | this section: Descriptor, Registry entry, Authentication; sections 3 and 6 |
+| 2. `native` profile | KOSTRAL engines: IRs in, IRs and findings out, may mutate (workflow request and registry approval) | this section: Server, Handshake then exchange |
+| 3. `external` profile | Third-party scanners (Trivy, kube-linter, Checkov): documents in, a SARIF log out, always read-only | "External profile" at the end of this section |
+
+SARIF is used in one place only, the mapper of part 3. Native engines do not speak it, because it has no `optimization` level and cannot carry changed documents.
+
 ### Server
 
 ```python
@@ -82,7 +92,8 @@ The server answers `GET /describe` and `POST /process`. It refuses to start unle
 | `contract_version` | Integer; must equal `1` today |
 | `mutates` | Must equal what the workflow allows |
 | `input_kinds` | Kubernetes kinds the engine analyzes. `"*"` means every kind except `Secret`, which must always be named |
-
+| `profile` | Optional. `"native"` (the default when absent) or `"external"`. The client refuses a server whose profile is not the one the workflow expects, before any document is sent. Adding it is backward compatible, so `contract_version` stays `1` |
+ 
 ### Registry entry
 
 ```json
@@ -109,6 +120,39 @@ The client times out after 30 seconds by default.
 ### Authentication
 
 Every request carries `Authorization: Bearer <token>`, on every endpoint. The server compares in constant time and answers `401` otherwise. A token is only sent over `https`, or over `http` to localhost.
+
+### External profile (experimental)
+
+An external scanner is not asked to speak KOSTRAL. It runs behind a small server (or as a subprocess), writes a SARIF 2.1.0 log, and KOSTRAL maps that log into the same findings every other engine appends.
+
+```json
+{
+  "name": "trivy",
+  "profile": "external",
+  "endpoint": "http://127.0.0.1:9012/process",
+  "descriptor": { "version": "0.76.2", "input_kinds": ["*"] },
+  "token_env": "KOSTRAL_TOKEN_TRIVY",
+  "mapping": { "fix_sources": ["fixes", "help_uri"] }
+}
+```
+
+- **Request.** `POST /process` with `{"documents": [<manifest>, ...]}` in the order of the run. There are no IR class names and no `opts`. Only the pinned kinds are sent; a `Secret` only if the registry names it. Unmodeled kinds are sent when the kinds allow it, so a scanner sees what the user wrote.
+- **Run.** The server writes document N to `000N.yaml` in a temporary folder, runs the pinned command (`{dir}` is that folder, no shell) and returns the tool's log: `{"sarif": <log>}`. The tool must exit 0 even when it finds problems (for Trivy, do not pass `--exit-code`); a non-zero exit means the tool broke.
+- **Reply.** Exactly `{"sarif": <log>}` and nothing else. A reply cannot carry a report or documents, so it cannot erase a finding or change a manifest.
+- **Descriptor.** Must declare `"profile": "external"` and `mutates: false`. A registry entry may not request or approve mutation.
+- **Mapping.** The `mapping` block is pinned in the registry, so severity decisions are reviewed, not hidden in code:
+  - `levels`: SARIF `level` to `[kostral level, severity]`. Default: `error` to `error`/`HIGH`, `warning` to `warning`/`medium`, `note` to `warning`/`low`. A level that is not listed is an error, never a guess. When a result has no `level`, the rule's default is used, then `warning` (SARIF's own default).
+  - `fix_sources`: where `fix` may come from, in order: `fixes` (`result.fixes`), `help` (`rule.help.text`), `help_uri` (`"see <uri>"`). Default `["fixes", "help_uri"]`: `rule.help` is off by default because some tools put metadata there. With no source and no `default_fix`, the run is an error. KOSTRAL does not invent a fix.
+  - `category`, `default_fix`: optional.
+- **Resource.** Taken from the document the finding's file points to (`metadata.name`), never parsed from message text. A file KOSTRAL cannot resolve keeps the uri as the resource.
+- **Order.** Findings are sorted by file, line, rule and message, so the report does not depend on the order the tool used.
+- **A log that cannot be trusted is an error.** Wrong SARIF version, no runs, a run without a `results` list (SARIF: absent means "analysis not performed", `[]` means "found nothing"), a result without rule or message.
+- **Limits.** The reply and the tool output are capped at 10 MB, the server refuses a larger request with `413`, and the tool has a timeout.
+- **Provenance.** `ctx.artifacts[<engine name>]` holds the tool name and version, the number of documents sent and the number of results. The raw log is stored only with `keep_raw=True`. An engine never overwrites another engine's entry. Artifacts do not enter the rendered output or the exit code.
+- **Local form.** `ExternalToolEngine` runs the same command as a subprocess and maps it the same way, with no server and no token.
+
+Known limits: each document is scanned as its own file, so checks that need several documents together are not seen; findings carry no line numbers (the log keeps them); `ctx.opts` is not sent to external scanners and the native profile still sends it (ADR6).
+
 
 ## 6. Errors and exit codes
 
@@ -166,8 +210,9 @@ Report events have rules: a `warning` or `error` needs `issue` and `fix` and no 
 
 ## 8. Not in the contract yet
 
-- **Output kinds.** The decision record ADR5 lists them; the descriptor has no such field.
-- **Raw documents for third-party scanners.** Documents travel as the serialized output of `to_manifest()`, typed or opaque. Whether that preserves everything the user wrote (unknown fields, ordering, multi-document layout) has not been verified, so a scanner might see a normalized copy. ADR7 proposes that the response carries findings only unless the engine declares `mutates`, and ADR6 proposes a per-engine place for raw tool output; both are Proposed, not implemented.
+- **Raw documents for third-party scanners.** Documents travel as the output of `to_manifest()`, typed or opaque; an untouched document is returned verbatim (ADR14), but comments and quoting style are lost. The `external` profile sends them as raw manifests, with no IR class names. The native profile still wraps them in IR class names.
+- **Real Trivy output.** The mapper is tested against a synthetic SARIF fixture built from a real Trivy JSON run, and against an example scanner. It has not been tested against the SARIF Trivy itself writes; do that before pinning a Trivy mapping.
+ 
 - **Transport limits.** No request or response size limit, no TLS setup help, and the example server handles one request at a time (ADR11 is Proposed).
 - **Concurrent execution** (ADR9).
 - **Finer permissions** than the single `mutates` flag.

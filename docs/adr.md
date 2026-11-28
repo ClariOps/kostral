@@ -261,7 +261,7 @@ Every remote call must be authentic. Not covered yet: TLS in the example server 
 
 ### Status
 
-Proposed
+Completed
 
 ### Context
 
@@ -269,18 +269,20 @@ For remote third party engines, the output response will be different.
 
 ### Decision
 
-One field per tool is how the contract fragments. Adapters should map each tool's findings into ReportEvents, and keep the raw tool output under ctx.artifacts["trivy"], namespaced per engine.
+Currently sarif based apps are supported, Sarif based output will be JSON kostral, then merge back to findings to get same ouptut. 
+original engine response shall remain in ctx.aritifacts["trivy|xyz|kubescore"], in that format   
+ctx.artifacts[name] = {"format", "tool", "version" ,"documents_sent", "results"}
 
 ### Consequences
 
-ctx.artifacts does not cross the wire yet, so a remote adapter cannot return raw output. To be decided with the Trivy adapter.
+Output shall remain same (kostral based JSON), independent of engine Profile (external|native) 
 
 
 ## ADR13. Unit of exchange
 
 ### Status
 
-Proposed (partly implemented)
+Completed
 
 ### Context
 
@@ -294,7 +296,7 @@ IR plus artifacts isn't enough. It works for Kostral's own engines. A third-part
 
 ### Consequences
 
-To be added after the Trivy adapter.
+Rogue engine got rejected, unknown KINDS hold in the client end and merge back to the ctx, No mutating engine got rejected on request, Error contract violation or others raised  
 
 
 ## ADR14. Lossless round trip
@@ -371,3 +373,30 @@ Stay in Python through the week 6 gates. The integration tests run koss as a sub
 ### Consequences
 
 After the protocol notes exist, a small engine in Go, written only from those notes, can test whether the protocol is language-neutral. Revisit if outside users ask for a single binary, or if concurrency becomes necessary.
+
+
+## ADR18. External profile and the SARIF mapper
+
+### Status
+
+Completed (experimental). Answers the open parts of ADR12 and ADR13 for third-party scanners.
+
+### Context
+
+Third-party scanners (Trivy, kube-linter, Checkov) do not speak the native protocol: they need raw documents, not IR class names, and they return their own format, not KOSTRAL findings. Making each tool's output a new field in the contract fragments it (ADR12). Making native engines speak SARIF as well would remove what they need: SARIF has no `optimization` level, no `impact`, and no way to return changed documents.
+
+### Decision
+
+1. One contract in three parts: shared rules, the `native` profile and the `external` profile. The descriptor gets an optional `profile` field. It is additive, so `CONTRACT_VERSION` stays 1 and every existing engine and test is unchanged. The client refuses a server whose profile is not the expected one before sending anything.
+2. SARIF is used in one place only: a pure mapper, `sarif_to_findings(log, profile)`. Its output is the same finding dict that `Report.extend` already validates, so both profiles meet at the same point and the bus checks stay the same.
+3. Tool-specific decisions (level to level and severity, where `fix` comes from, category) live in a `mapping` block pinned in the registry. An unmapped level, a result with no fix source, or a log that says the analysis was not performed is an error, never a guess.
+4. `run()` and `map()` are separate. `run_tool` owns everything outside our control (missing binary, timeout, exit code, output size, not JSON) and `sarif_to_findings` owns the translation. Remote and local scanners share both.
+5. The external request is `{"documents": [...]}` and the reply is exactly `{"sarif": ...}`. A reply cannot carry a report or documents. A scanner is read-only by its descriptor.
+6. The resource of a finding comes from the document its file points to (one file per document, named by position), not from the tool's message text. Raw tool output goes in `ctx.artifacts[<engine name>]`; an engine never overwrites another engine's entry.
+
+### Consequences
+
+- A new scanner needs a server around its command and a `mapping` block. It does not need new code in KOSTRAL, unless its SARIF cannot express a fix (then use `default_fix` or write a tool-specific mapper).
+- Each document is scanned as its own file, so checks across documents are not seen. Findings carry no line numbers yet. And Get Results=[]
+- The 10 MB size limits and the timeout apply to the external profile only. The native profile still has none (ADR11).
+- Revisit if a scanner's SARIF cannot carry a fix, or if two scanners need different resource resolution.

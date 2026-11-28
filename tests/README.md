@@ -19,6 +19,7 @@ also run under `pytest`.
   and in any file order), source files are never modified, exit codes, input modes.
 - `test_remote.py`: starts the three example servers (ports 9001-9003) and compares
   the remote workflow with the local result; a missing server must be an error.
+- `test_external.py`: the external profile. The SARIF mapper (pure), running a tool, the local and remote engines, the profile handshake, and the CLI exit codes. It needs no real scanner: `examples/external/example_scanner.py` writes SARIF like Trivy does, and the Trivy fixture in `fixtures/` is generated bu `python tests/integration/regen-trivy-fixture.py`. Port 9011 is used for one CLI round trip and skipped if busy.
 
 ## Report
 

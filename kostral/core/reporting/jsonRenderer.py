@@ -41,19 +41,24 @@ class JSONRenderer:
 
 
     def _format_event(self, e):
-        return {
+        def raw(v):
+            return v.value if isinstance(v, Enum) else v
+
+        event = {
             "rule": e.rule,
-            "severity": (
-                e.severity.value
-                if isinstance(e.severity, Enum)
-                else e.severity
-            ),
-            "category": (
-                e.category.value
-                if isinstance(e.category, Enum)
-                else e.category
-            ),
+            "severity": raw(e.severity),
+            "category": raw(e.category),
         }
+        if self.verbose:
+            event.update({
+                "engine": e.engine,
+                "level": e.level,
+                "message": e.message,
+                "issue": e.issue,
+                "impact": e.impact,
+                "fix": e.fix,
+            })
+        return event
     
     def _build_summary(self, report):
         return {

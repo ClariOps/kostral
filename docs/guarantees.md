@@ -22,12 +22,15 @@ If this page and the code disagree, the code and its tests win; please open an i
 | 8 | A mutating engine cannot be placed in `parallel_checks`; those engines run in list order | yes (bus refuses to build) | `test_contract.test_workflow_cannot_put_a_mutating_engine_in_parallel_checks`, `test_parallel_checks_run_in_list_order` |
 | 9 | A remote engine must match its descriptor (name, contract version, pinned version and kinds, mutation permission) before any document is sent | yes | `test_descriptor.test_a_mismatch_means_no_document_is_ever_sent`, `test_each_mismatch_is_refused_with_its_own_reason`, `test_workflow_allowing_mutation_must_match_what_the_engine_declares` |
 | 10 | Remote mutation needs both the workflow's request and the registry's approval | yes | `test_contract.test_remote_mutation_needs_workflow_request_and_registry_approval`, `test_registry_approval_alone_does_not_make_an_engine_mutating` |
-| 11 | A Secret is sent to a remote engine only if the registry names the kind `Secret`; held documents come back in place | yes | `test_hold_back.test_a_secret_never_reaches_an_engine_that_did_not_ask_for_it`, `test_a_secret_is_sent_only_when_the_registry_names_it`, `test_remote.test_a_secret_in_the_input_stays_out_of_the_engines_and_in_the_output` |
+| 11 | A Secret is sent to a remote engine only if the registry names the kind `Secret`; held documents come back in place | yes | `test_hold_back.test_a_secret_never_reaches_an_engine_that_did_not_ask_for_it`, `test_a_secret_is_sent_only_when_the_registry_names_it`, `test_remote.test_a_secret_in_the_input_stays_out_of_the_engines_and_in_the_output`, `test_external.test_a_secret_is_held_back_by_the_wildcard_and_sent_only_when_named` | 
 | 12 | Remote calls need a token (16 characters or more, read from an environment variable); the token is compared in constant time and is never sent over plain http beyond localhost | yes | `test_token.test_no_token_and_a_wrong_token_are_both_401_on_every_endpoint`, `test_the_comparison_is_constant_time`, `test_a_token_is_never_sent_over_plain_http_beyond_localhost`, `test_a_weak_token_is_refused_without_repeating_it` |
 | 13 | An engine failure is an error, never an empty result | yes | `test_descriptor.test_an_unreachable_descriptor_is_an_error_not_an_empty_result`, `test_contract.test_reply_without_findings_is_an_error_not_an_empty_result`, `test_remote.test_remote_run_with_servers_down_fails_loudly` |
 | 14 | CI can tell "the manifest failed" (exit 1) from "koss broke" (exit 3) | yes | `test_guarantees.test_findings_and_crash_have_different_exit_codes`, `test_failed_status_exits_nonzero`, `test_good_manifest_exits_zero` |
 | 15 | A remote run matches the local run for the same input | no | `test_remote.test_remote_result_matches_local_result` |
-
+| 16 | An external scanner is read-only, and its reply is a SARIF log and nothing else: it cannot replace the report or change a manifest. A server of the wrong profile gets no document | yes (handshake, reply shape, bus snapshot) | `test_external.test_a_reply_is_a_sarif_log_and_nothing_else`, `test_a_scanner_that_claims_it_mutates_is_refused`, `test_a_native_server_is_refused_before_anything_is_sent`, `test_an_external_server_is_refused_by_a_native_client`, `test_it_cannot_erase_earlier_findings_through_the_bus` |
+| 17 | A scanner that is missing, slow, failing or returns a log that cannot be mapped is an error (exit 3), never an empty result. KOSTRAL never guesses a level or invents a fix | yes | `test_external.test_every_way_a_tool_can_break_is_a_tool_error`, `test_a_log_that_cannot_be_trusted_is_an_error_never_an_empty_report`, `test_an_unmapped_level_is_an_error_not_a_guess`, `test_no_source_for_fix_is_an_error_unless_the_profile_names_a_default`, `test_a_broken_scanner_is_exit_3_not_exit_1_and_not_a_pass` |
+| 18 | The order of an external scanner's findings does not depend on the order the tool used; the same log and mapping give the same findings. A remote scanner run matches the local run | no (a property of the mapper) | `test_external.test_order_never_depends_on_the_tool`, `test_same_input_same_findings`, `test_remote_gives_the_same_findings_as_local`, `RemoteExternalCliTests.test_remote_run_matches_the_local_run` |
+ 
 ## Promises that are not enforced
 
 | Promise | Why not | Where it stands |
@@ -38,6 +41,7 @@ If this page and the code disagree, the code and its tests win; please open an i
 ## What Kostral does not guarantee
 
 - That any engine's findings are correct, including security findings.
+- That an external scanner's findings are the same across scanner versions. The version is pinned in the registry and checked at the handshake; the same manifest and the same pinned version give the same decision.
 - That an optimization is the right one for your workload.
 - Determinism of an engine that Kostral does not control. Kostral guarantees how engines are run, checked and reported (execution determinism). An engine that calls a model or an external service can still return different findings for the same input.
 - Anything an engine does outside the manifests and the report (files, network, other processes).

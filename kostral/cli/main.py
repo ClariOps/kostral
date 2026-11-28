@@ -205,7 +205,7 @@ def _main():
         krunner = KostralRunner(bus)
         krunner.run(ctx)
         if args.output == "json":
-            renderer = JSONRenderer(ctx.report)
+            renderer = JSONRenderer(ctx.report, verbose=args.verbose)
             output = renderer.render()
             print(output)
         elif args.output == "yaml":
@@ -248,7 +248,7 @@ def _main():
         krunner = KostralRunner(bus)
         krunner.run(ctx)
         if args.output == "json":
-            renderer = JSONRenderer(ctx.report)
+            renderer = JSONRenderer(ctx.report, verbose=args.verbose)
             output = renderer.render()
             print(output)
         elif args.output == "yaml":
@@ -290,7 +290,7 @@ def _main():
         krunner.run(ctx)
         
         if args.output == "json":
-            renderer = JSONRenderer(ctx.report)
+            renderer = JSONRenderer(ctx.report, verbose=args.verbose)
             print(renderer.render())
         
         elif args.output == "yaml":

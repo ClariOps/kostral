@@ -87,7 +87,8 @@ def _deserialize_irs(items):
 
 
 class HTTPModuleClient(RemoteModuleClient):
-
+    # Which profile the server must declare at /describe (see core/contract.py).
+    PROFILE = "native"
     def __init__(
         self,
         name: str,
@@ -130,7 +131,7 @@ class HTTPModuleClient(RemoteModuleClient):
             raise RemoteEngineError(f"{self.name}: cannot read the descriptor at {url}: {exc}") from exc
 
         verify_descriptor(declared, name=self.name, pins=self.pins,
-                          mutates=self.metadata["mutates"])
+                          mutates=self.metadata["mutates"], profile=self.PROFILE)
  
         # What may be sent is what the REGISTRY pinned (the handshake proved the
         # engine declares the same). Without a registry the engine's own claim is
